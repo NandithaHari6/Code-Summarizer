@@ -1,17 +1,31 @@
-To run,
-python -m venv .venv
-pip install requirements.txt
-Create groq API key from https://console.groq.com/keys
-Create a .env file with groq_api_key="YOUR_KEY"
+To run,<br />
 
-Run Fast API server using the command:
-uvicorn main:app --reload
+python -m venv .venv <br />
 
-To test the proper functioning of the API , send POST  requests to
- http://127.0.0.1:8000/generate_summary
- with the following body format:
- {
-    "level":"folder",
-"repo_link":"https://github.com/mcanet/STL-Volume-Model-Calculator"
+pip install requirements.txt<br />
+
+Create groq API key from https://console.groq.com/keys<br />
+
+Create a .env file with groq_api_key="YOUR_KEY"<br />
+
+
+Run Fast API server using the command:<br />
+
+uvicorn main:app --reload<br />
+
+
+To test the proper functioning of the API , send POST  requests to<br />
+
+ http://127.0.0.1:8000/generate_summary<br />
+
+ with the following body format:<br />
+
+{<br />
+<br />
+
+"level":"folder",<br />
+
+"repo_link":"  repo//link//in//github//that //you//want//to//summarize"<br />
+
 }
 
