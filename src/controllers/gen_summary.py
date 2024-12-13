@@ -2,12 +2,8 @@ from git import Repo
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_text_splitters import Language
-from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
-from langchain_text_splitters import CharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +11,7 @@ import os
 def generate_summary(repo_link: str, level: str) -> str:
     print(level)
     
-    repo_path =os.path.join(os.getcwd(),"/clonedfile")
+    repo_path ="/tmp/clonedfile"
     repo = Repo.clone_from(repo_link, to_path=repo_path)
     loader = GenericLoader.from_filesystem(
         repo_path ,
