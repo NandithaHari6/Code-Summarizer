@@ -5,7 +5,7 @@ from langchain_text_splitters import Language
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
-
+import shutil
 load_dotenv()
 import os
 def generate_summary(repo_link: str, level: str) -> str:
@@ -50,11 +50,14 @@ def generate_summary(repo_link: str, level: str) -> str:
    
     print(final_sum.content)
 
-    repo.__del__()
+    
     try:
-        os.chmod(repo_path, 0o777)
-        
-        os.system(f"rmdir /s /q  \"{repo_path}\"" )
+        if os.path.exists(repo_path):
+            print(f"Directory exists: {repo_path}. Deleting...")
+            shutil.rmtree(repo_path)
+            print(f"Deleted {repo_path}")
+        else:
+            print(f"Directory does not exist: {repo_path}")
     except OSError as e:
     # If it fails, inform the user.
         print("Error: %s - %s." % (e.filename, e.strerror))
