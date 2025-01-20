@@ -1,6 +1,6 @@
-/* General Styling */
 .App {
-  background-color: #f8f9fa; /* Light gray background */
+  background: url('./bg.jpg') no-repeat center center fixed; /* Use the uploaded image as the background */
+  background-size: cover; /* Make the image cover the entire screen */
   text-align: center;
   min-height: 100vh;
   padding: 20px;
@@ -12,34 +12,45 @@
 
 /* Navbar Styling */
 .navbar {
-  width: 100%; /* Full width */
-  background-color: #d9534f; /* Red background */
+  width: 100%;
+  background-color: transparent; /* Make the navbar transparent */
   color: white;
-  padding: 10px 0;
+  border-bottom: 1px solid white; /* Thin white line under nav elements */
 }
 
-/* Navbar Links */
 .navbar-brand {
   font-weight: bold;
   color: white !important;
 }
 
+button {
+  background: transparent; /* Transparent background for buttons */
+  color: white; /* White text */
+  font-weight: bold;
+  border: 1px solid white; /* White border */
+  padding: 8px 15px;
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light translucent hover effect */
+  color: white;
+}
+
 /* Input Field Styling */
 .bg-light-pink {
-  background-color: #f9e2e2 !important; /* Light pink background */
-  border: 1px solid #d9534f; /* Red border */
+  background: transparent; /* Transparent input background */
+  color: white; /* White text */
+  border: 1px solid white; /* White border */
   padding: 10px;
   border-radius: 5px;
 }
 
-/* Button Styling */
-button {
-  font-weight: bold;
+.bg-light-pink::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Slightly translucent white placeholder text */
 }
 
-button:hover {
-  background-color: #c9302c !important; /* Slightly darker red on hover */
-  color: white;
+.text-danger {
+  color: white !important; /* Make error messages white */
 }
 
 /* Form Spacing */
@@ -50,3 +61,29 @@ button:hover {
 .mb-3 {
   margin-bottom: 1rem !important;
 }
+
+/* Card Styling */
+.card {
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black card background */
+  color: white;
+  border: none;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  color: rgba(255, 255, 255, 0.8); /* Slightly translucent text */
+}
+
+.card button {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.card button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
