@@ -12,13 +12,15 @@ def generate_summary(repo_link: str, level: str) -> str:
     print(level)
     
     repo_path ="/tmp/clonedfile"
-    repo = Repo.clone_from(repo_link, to_path=repo_path)
+    
+    # repo = Repo.clone_from(repo_link, to_path=repo_path)
     loader = GenericLoader.from_filesystem(
         repo_path ,
         glob="**/*",
-        suffixes=[".py"],
-        exclude=["**/non-utf8-encoding.py"],
-        parser=LanguageParser(language=Language.PYTHON),
+        suffixes=[".py", ".js"],
+        
+        
+        parser=LanguageParser(),
     )
     documents = loader.load()
     print("Len of documents")
@@ -27,20 +29,21 @@ def generate_summary(repo_link: str, level: str) -> str:
     res=[0]*len(documents)
     llm=ChatGroq(temperature=0,
                 groq_api_key=os.getenv("groq_api_key"),
-                model_name="llama-3.1-70b-versatile")
+                model_name="llama-3.3-70b-versatile")
 
     # Map
-    map_template = """The following is the code that is a part of a price comparison website.
+    map_template = """You are a senior software engineer working on this project, with experience of handling various code bases, in different programming languages. Explain the functionality of the code to a junior software developer, who recently joined your team and is viewing this code base for the first time 
     {docs}
-    The docs contain python code for building a proce comparison website. Please summarize each doc in 2 to 3 lines, include all necessary and important information.Do not include meta data information and code snippet . Just the sentence explaination is enough"""
+    Explain in just 2 to 3 sentences,just the thing in the code alone. Do not add your own logic  .Do not include meta data information and code snippet . Just the sentence explaination is enough"""
     map_prompt = PromptTemplate.from_template(map_template)
     map_chain = map_prompt |llm
     i=0
     for i in range(0,len(documents)):
     #    print(map_chain.invoke({"docs":documents[i]}).content)
+        print(documents[i].metadata)
         res[i]=map_chain.invoke({"docs":documents[i]}).content
     # Reduce
-    reduce_template = """The following is set of summaries of small code snippets of a price comparison website code
+    reduce_template = """The following is set of summaries of small code snippets of that are part of a single project
     {docs}
     Take these and distill it into a final, consolidated summary of the main themes. 
     """
@@ -66,6 +69,6 @@ def generate_summary(repo_link: str, level: str) -> str:
 
 
 if __name__=="__main__":
-    generate_summary("https://github.com/NandithaHari6/portfolio","folder")
+    generate_summary("https://github.com/NandithaHari6/dbms-project","folder")
     
     
