@@ -11,7 +11,7 @@ import os
 def load_docs(repo_link:str,repo_path:str):
     
       
-    # repo = Repo.clone_from(repo_link, to_path=repo_path)
+    repo = Repo.clone_from(repo_link, to_path=repo_path)
     loader = GenericLoader.from_filesystem(
         repo_path ,
 
