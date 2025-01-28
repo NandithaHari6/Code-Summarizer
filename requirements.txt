@@ -1,6 +1,5 @@
 fastapi==0.115.6
 GitPython==3.1.43
-GitPython==3.1.43
 langchain_community==0.3.11
 langchain_core==0.3.24
 langchain_groq==0.2.1
@@ -9,3 +8,9 @@ pydantic==2.10.3
 python-dotenv==1.0.1
 uvicorn==0.29.0
 virtualenv==20.25.1
+dotenv
+psycopg2==2.9.10
+sqlalchemy
+esprima 
+tree_sitter 
+tree_sitter_languages
