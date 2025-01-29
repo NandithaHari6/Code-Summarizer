@@ -5,12 +5,12 @@ from langchain_text_splitters import Language
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
+from redis_cache import save_docs_to_redis, load_docs_from_redis, delete_docs_from_redis
 import shutil
 load_dotenv()
 import os
-def load_docs(repo_link:str,repo_path:str):
-    
-      
+
+def load_docs(repo_link:str,repo_path:str):    
     repo = Repo.clone_from(repo_link, to_path=repo_path)
     loader = GenericLoader.from_filesystem(
         repo_path ,
@@ -20,7 +20,6 @@ def load_docs(repo_link:str,repo_path:str):
         exclude=["**/non-utf8-encoding.py"],
         parser=LanguageParser(language=Language.PYTHON),
     )
-    
     documents = loader.load()
     return documents
 def instantiate_llm(llm_name:str):
@@ -85,8 +84,17 @@ def delete_folder(repo_path):
         print("Error: %s - %s." % (e.filename, e.strerror))
 def generate_summary(repo_link: str,level,file_path=None) -> str:
     #Load documents
-    repo_path ="/tmp/clonedfile"
-    documents = load_docs(repo_link,repo_path)
+    repo_path = "/tmp/clonedfile"
+    cached_docs = load_docs_from_redis(repo_link)
+    if cached_docs:
+        print("Loading documents from Redis cache...")
+        documents = cached_docs
+    else:
+       
+        
+        documents = load_docs(repo_link, repo_path)
+        save_docs_to_redis(repo_link, documents)  # Store in Redis
+    
     print("Len of documents")
     print(len(documents))
 
@@ -95,20 +103,21 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
     #Map reduce
     res=map_phase(llm,documents)
     if level=="folder":
-
         final_sum=reduce_phase_folder_sum(llm,res)
         print(final_sum.content)
     elif level=="file":
         final_sum=reduce_phase_file_sum(llm,res,documents,file_path)
         print(final_sum.content)
-    
+     
     #Delete Cloned folder
     
-    delete_folder(repo_path)
+    
     
     return final_sum.content
 
-
+def close_repo(repo_link,repo_path="\tmp\clonedrepo"):
+    delete_folder(repo_path)
+    delete_docs_from_redis(repo_link)
      
 
 if __name__=="__main__":
