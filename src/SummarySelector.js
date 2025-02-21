@@ -2,86 +2,222 @@ import React, { useState } from "react";
 import {
   Box,
   Typography,
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Button,
-  TextField,
+  TextareaAutosize,
+  Divider,
+  IconButton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SaveIcon from "@mui/icons-material/Save";
 
 function SummarySelector() {
-  const [summaryLevel, setSummaryLevel] = useState("file");
-  const navigate = useNavigate();
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [textInput, setTextInput] = useState("");
+  const [summary, setSummary] = useState("");
 
-  const handleSaveSummary = () => {
-    // Navigate to login page
-    navigate("/login");
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedFile(file);
+    }
+  };
+
+  const handleSummarize = () => {
+    
+    setSummary("This is a placeholder summary for the uploaded text or input.");
+  };
+
+  const handleSave = () => {
+    
+    alert("Summary saved!");
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: "black",
-        color: "white",
-        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "20px",
+        flexDirection: "row",
+        height: "100vh",
+        backgroundColor: "#121212",
+        color: "white",
       }}
     >
-      <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>
-        <span style={{ color: "green" }}>Choose Your Summary Level</span>
-      </Typography>
-
-      <Typography variant="body1" sx={{ mb: 4, color: "rgba(255, 255, 255, 0.8)" }}>
-        Select the level of summary you'd like: File-level, Folder-level, or Code Snippet-level.
-      </Typography>
-
-      {/* Summary Level Options */}
-      <FormControl>
-        <RadioGroup
-          value={summaryLevel}
-          onChange={(e) => setSummaryLevel(e.target.value)}
-          sx={{ mb: 3 }}
-        >
-          <FormControlLabel
-            value="file"
-            control={<Radio sx={{ color: "darkgreen" }} />}
-            label={<Typography sx={{ color: "white" }}>File Level</Typography>}
-          />
-          <FormControlLabel
-            value="folder"
-            control={<Radio sx={{ color: "green" }} />}
-            label={<Typography sx={{ color: "white" }}>Folder Level</Typography>}
-          />
-          <FormControlLabel
-            value="code"
-            control={<Radio sx={{ color: "green" }} />}
-            label={<Typography sx={{ color: "white" }}>Code Snippet</Typography>}
-          />
-        </RadioGroup>
-      </FormControl>
-
-      {/* Save Button */}
-      <Button
-        variant="contained"
-        onClick={handleSaveSummary}
+      {/* Sidebar */}
+      <Box
         sx={{
-          backgroundColor: "darkgreen",
-          color: "black",
-          padding: "10px 30px",
-          borderRadius: "20px",
-          fontWeight: "bold",
-          "&:hover": { backgroundColor: "green" },
+          width: "300px",
+          backgroundColor: "#1E1E1E",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        Save Summary
-      </Button>
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", mb: 2, color: "lightgray" }}
+        >
+          Summary Level
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "darkgreen",
+            mb: 2,
+            "&:hover": { backgroundColor: "green" },
+          }}
+        >
+          File Level
+        </Button>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "darkgreen",
+            "&:hover": { backgroundColor: "green" },
+          }}
+        >
+          Project Level
+        </Button>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "darkgreen",
+            "&:hover": { backgroundColor: "green" },
+          }}
+        >
+          Folder Level
+        </Button>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "darkgreen",
+            "&:hover": { backgroundColor: "green" },
+          }}
+        >
+          Code Snippet Level
+        </Button>
+      </Box>
+
+      {/* Main Content */}
+      <Box
+        sx={{
+          flex: 1,
+          padding: "40px",
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+        }}
+      >
+        {/* Header with Save Option */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            Multilingual Text Summarizer
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<SaveIcon />}
+            sx={{
+              backgroundColor: "#4CAF50",
+              "&:hover": { backgroundColor: "#388E3C" },
+            }}
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+        </Box>
+
+        {/* File Upload Section */}
+        <Box
+          sx={{
+            border: "2px dashed gray",
+            borderRadius: "10px",
+            padding: "40px",
+            textAlign: "center",
+            mb: 4,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Choose a file (PDF, TXT, Image)
+          </Typography>
+          <input
+            type="file"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+            id="file-upload"
+          />
+          <label htmlFor="file-upload">
+            <Button
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              sx={{
+                backgroundColor: "darkgreen",
+                "&:hover": { backgroundColor: "green" },
+              }}
+              component="span"
+            >
+              Browse files
+            </Button>
+          </label>
+          {uploadedFile && (
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Uploaded: {uploadedFile.name}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Text Input Area */}
+        <TextareaAutosize
+          minRows={8}
+          placeholder="Enter text or paste content here..."
+          value={textInput}
+          onChange={(e) => setTextInput(e.target.value)}
+          style={{
+            width: "100%",
+            backgroundColor: "#1E1E1E",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid gray",
+            marginBottom: "20px",
+          }}
+        />
+
+        {/* Summarize Button */}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "darkgreen",
+            mb: 4,
+            "&:hover": { backgroundColor: "green" },
+          }}
+          onClick={handleSummarize}
+        >
+          Summarize
+        </Button>
+
+        {/* Display Summary */}
+        {summary && (
+          <Box
+            sx={{
+              backgroundColor: "#1E1E1E",
+              padding: "20px",
+              borderRadius: "10px",
+              border: "1px solid gray",
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Summary:
+            </Typography>
+            <Typography variant="body1">{summary}</Typography>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
