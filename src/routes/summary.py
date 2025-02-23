@@ -14,7 +14,7 @@ async def generate_summary_endpoint(request: SummaryRequest):
         # Handle exceptions and return an error response
         raise HTTPException(status_code=500, detail=str(e))
 @router.post("/generate_file_summary")
-async def generate_summary_endpoint(request: SummaryRequest):
+async def generate_file_summary_endpoint(request: SummaryRequest):
     try:
         # Call the generate_summary function with the parameters from the request
         summary = generate_summary(request.repo_link, request.level, request.file_path)
@@ -27,7 +27,7 @@ async def generate_summary_endpoint(request: SummaryRequest):
 async def close_repo_request(request: CloseRepoRequest):
     try:
         close_repo(request.repo_link)
-        return {"message": f"Successfully clsed the repo {request.repo_link}"}
+        return {"message": f"Successfully closed the repo {request.repo_link}"}
     except Exception as e:
         # Handle exceptions and return an error response
         raise HTTPException(status_code=500, detail=str(e))
