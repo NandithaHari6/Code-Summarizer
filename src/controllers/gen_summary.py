@@ -6,8 +6,9 @@ from langchain_text_splitters import Language
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
-from controllers.redis_cache import save_docs_to_redis, load_docs_from_redis, delete_docs_from_redis
+from controllers.redis_cache import save_file_structure_to_redis, load_file_structure_from_redis,save_docs_to_redis, load_docs_from_redis, delete_docs_from_redis
 import shutil
+
 load_dotenv()
 import os
 
@@ -96,16 +97,7 @@ def reduce_phase_file_sum_from_res(llm,res, documents,file_path):
     final_sum=reduce_chain.invoke({"docs":code_snippet_sum,"file_path":file_path})
    
     return final_sum        
-def get_repo_directory_structure(repo_path):
-    """Returns the directory structure of the cloned repository."""
-    repo_structure = {}
-    for root, dirs, files in os.walk(repo_path):
-        relative_path = os.path.relpath(root, repo_path)
-        repo_structure[relative_path] = {
-            "folders": dirs,
-            "files": files
-        }
-    return repo_structure    
+
 
 
 def remove_readonly(func, path, _):
@@ -124,6 +116,29 @@ def delete_folder(repo_path):
             print(f"Directory does not exist: {repo_path}")
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
+def get_directory_structure(repo_link):
+    root_dir="/tmp/clonedfile"
+    """Recursively generates a directory structure dictionary, ignoring hidden files."""
+    cached_docs = load_file_structure_from_redis(repo_link)
+    if cached_docs:
+        return cached_docs["file_structure"]
+    directory_structure = {}
+    if not os.path.exists(root_dir):
+        repo = Repo.clone_from(repo_link, to_path=root_dir)
+    for item in os.listdir(root_dir):
+        if item.startswith("."):  # Ignore hidden files and folders
+            continue
+        item_path = os.path.join(root_dir, item)
+        if os.path.isdir(item_path):
+            directory_structure[item] = get_directory_structure(item_path)
+        else:
+            directory_structure[item] = None  # Mark files as None
+    if os.path.exists(root_dir):
+        delete_folder(root_dir)
+    save_file_structure_to_redis(repo_link,directory_structure)
+    return directory_structure
+
+
 def generate_summary(repo_link: str,level,file_path=None) -> str:
     #Load documents
     repo_path = "/tmp/clonedfile"
@@ -137,6 +152,7 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
     else: 
         docs = load_docs(repo_link, repo_path)
         res=map_phase(llm,docs)
+       
         save_docs_to_redis(repo_link, docs,res)  # Store in Redis
         
     print("Len of documents")

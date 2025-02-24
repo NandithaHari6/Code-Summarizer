@@ -2,12 +2,22 @@ import redis
 import pickle
 REDIS_URL="rediss://red-cucgbk3qf0us73cb954g:tP7yEM8hK01CfjLUYIXeTt9TFWgCvJ07@oregon-redis.render.com:6379"
 redis_client = redis.StrictRedis.from_url(REDIS_URL)
+def save_file_structure_to_redis(repo_link, structure):
+    """Store both documents and results in Redis."""
 
+    redis_client.setex(repo_link+"file_structure",3600, pickle.dumps({"file_structure":structure})) 
+def load_file_structure_from_redis(repo_link):
+    """Retrieve documents and results from Redis if available."""
+    data = redis_client.get(repo_link+"file_structure")
+    if data:
+        return pickle.loads(data)  # Deserialize and return
+    return None  # Return None if cache is empty
 def save_docs_to_redis(repo_link, documents, res):
     """Store both documents and results in Redis."""
     cache_data = {
         "documents": documents,
-        "res": res
+        "res": res,
+        
     }
     redis_client.setex(repo_link,3600, pickle.dumps(cache_data))  # Serialize and store
 

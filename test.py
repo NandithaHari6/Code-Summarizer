@@ -1,19 +1,19 @@
 import requests
 
 # The API endpoint
-# url = "https://code-summarizer.onrender.com/generate_summary"
+url = "https://code-summarizer.onrender.com/generate_folder_summary"
 # url="http://127.0.0.1:8000/generate_folder_summary"
 # # Data to be sent
 # data = {
 #     "repo_link":"https://github.com/NandithaHari6/dbms-project-backend",
 #     "level":"folder"
 # }
-url="http://127.0.0.1:8000/generate_file_summary"
+# url="http://127.0.0.1:8000/generate_file_summary"
 # Data to be sent
 data = {
-    "repo_link":"https://github.com/NandithaHari6/dbms-project-backend",
-    "level":"file",
-    "file_path":"\\tmp\\clonedfile\\controller\\loanController.js"
+    "repo_link":"https://github.com/deepankarvarma/To-Do-List-Using-Python",
+    "level":"folder",
+    
 }
 
 # A POST request to the API
