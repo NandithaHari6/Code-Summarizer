@@ -116,26 +116,38 @@ def delete_folder(repo_path):
             print(f"Directory does not exist: {repo_path}")
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
-def get_directory_structure(repo_link):
-    root_dir="/tmp/clonedfile"
+def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
     """Recursively generates a directory structure dictionary, ignoring hidden files."""
+    
+    # Check Redis cache first
     cached_docs = load_file_structure_from_redis(repo_link)
     if cached_docs:
         return cached_docs["file_structure"]
-    directory_structure = {}
+    
+    # Clone repository only if not already cloned
     if not os.path.exists(root_dir):
-        repo = Repo.clone_from(repo_link, to_path=root_dir)
-    for item in os.listdir(root_dir):
-        if item.startswith("."):  # Ignore hidden files and folders
-            continue
-        item_path = os.path.join(root_dir, item)
-        if os.path.isdir(item_path):
-            directory_structure[item] = get_directory_structure(item_path)
-        else:
-            directory_structure[item] = None  # Mark files as None
-    if os.path.exists(root_dir):
-        delete_folder(root_dir)
-    save_file_structure_to_redis(repo_link,directory_structure)
+        Repo.clone_from(repo_link, to_path=root_dir)
+
+    def build_structure(directory):
+        structure = {}
+        for item in os.listdir(directory):
+            if item.startswith("."):  # Ignore hidden files and folders
+                continue
+            item_path = os.path.join(directory, item)
+            if os.path.isdir(item_path):
+                structure[item] = build_structure(item_path)  # Recurse correctly
+            else:
+                structure[item] = None  # Mark files as None
+        return structure
+
+    directory_structure = build_structure(root_dir)
+
+    # Cache the structure in Redis
+    save_file_structure_to_redis(repo_link, directory_structure)
+
+    # Cleanup after processing
+    delete_folder(root_dir)
+
     return directory_structure
 
 
