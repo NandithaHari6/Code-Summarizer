@@ -125,7 +125,7 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
         return cached_docs["file_structure"]
     
     # Clone repository only if not already cloned
-    if not os.path.exists(root_dir):
+    else:
         Repo.clone_from(repo_link, to_path=root_dir)
 
     def build_structure(directory):
@@ -146,7 +146,8 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
     save_file_structure_to_redis(repo_link, directory_structure)
 
     # Cleanup after processing
-    delete_folder(root_dir)
+    if os.path.exists(root_dir):
+        delete_folder(root_dir)
 
     return directory_structure
 
