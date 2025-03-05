@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import FastAPI, HTTPException
-from controllers.gen_summary import generate_summary,close_repo,get_directory_structure
-from schema.gen_summary import SummaryRequest,CloseRepoRequest
+from controllers.gen_summary import generate_summary,close_repo,get_directory_structure,code_snippet_summary
+from schema.gen_summary import SummaryRequest,CloseRepoRequest, CodeSnippet
 
 router = APIRouter()
 @router.post("/generate_folder_summary")
@@ -28,6 +28,16 @@ async def generate_file_structure(request: CloseRepoRequest):
         # Call the generate_summary function with the parameters from the request
         structure = get_directory_structure(request.repo_link)
         return {"structure":structure}
+    except Exception as e:
+        # Handle exceptions and return an error response
+        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/generate_code_summary")
+async def code_snippet(request: CodeSnippet):
+    try:
+        # Call the generate_summary function with the parameters from the request
+        summary=code_snippet_summary(request.code)
+        print(f"Summary is {summary}")
+        return {"summary": summary}
     except Exception as e:
         # Handle exceptions and return an error response
         raise HTTPException(status_code=500, detail=str(e))

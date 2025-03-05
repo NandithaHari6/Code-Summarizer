@@ -4,7 +4,19 @@ from langchain_core.prompts import PromptTemplate
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-github_link=["https://github.com/adityasurya4103/Clinic-Hospital-Management-System-"]
+github_link = [
+    "https://github.com/adityasurya4103/Clinic-Hospital-Management-System-",
+"https://github.com/Viveckh/Veniqa",
+"https://github.com/Tanq16/ExpenseOwl",
+"https://github.com/AR10X/data-analysis",
+"https://github.com/PATMESH/Learning-Management-System",
+"https://github.com/deepankarvarma/To-Do-List-Using-Python",
+"https://github.com/otahina/PowerPoint-Generator-Python-Project",
+"https://github.com/MaxRohowsky/chrome-dinosaur",
+"https://github.com/wasimtikki120/WeatherVista-Interactive-Weather-App",
+
+"https://github.com/Rohit-Nandagawali/HTML-Chat-Application-using-java",
+]
 
 mydir = os.getcwd()  # Get the current directory 
 
@@ -34,17 +46,17 @@ def compute_similarity(ref_json, gen_json):
     print(scores)
     return sum(scores) / len(scores)  # Average similarity score    
 for i in range(len(github_link)):
-    myfile = f"evaluation/eval_files/eval_file{i}.txt"
+    myfile = f"evaluation/eval_files/eval_files{i}.txt"
     file_path = os.path.join(mydir, myfile)
     with open(file_path, "r") as f:
         ref_summary = f.read()  # Read file content
     
     ref_json=extract_chain.invoke({"summary":ref_summary})
     
-    generated_summary=generate_summary(repo_link=github_link[0], level="folder")
+    generated_summary=generate_summary(repo_link=github_link[i], level="folder")
     gen_json=extract_chain.invoke({"summary":generated_summary})
-    print(f"Ref summary :{ref_json}")
-    print(f"Generated Summary:{gen_json}")
+    # print(f"Ref summary :{ref_json.content}")
+    # print(f"Generated Summary:{gen_json.content}")
     # print(json.loads(ref_json.content))
     score = compute_similarity(json.loads(ref_json.content), json.loads(gen_json.content))
     print(f"Similarity Score for repo {github_link[i]}: {score:.4f}")

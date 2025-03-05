@@ -1,0 +1,258 @@
+PowerPoint Generator: Your Gateway to Effortless Presentations 🚀
+
+Dive into the ease of presentation creation with PowerPoint Generator, a smart web application crafted to automate 
+PowerPoint presentations! 🌟 
+This project is ripe for growth and eager for your contributions. Let's enhance its capability together! 😊
+
+Demo Highlights 🎬
+
+https://github.com/otahina/PowerPoint-Generator-Python-Project/assets/108225969/82d98c7a-0244-4fed-8f6b-f6c994fd69e3
+
+Table of Contents 📋
+
+1. 
+2. 
+3. 
+4. 
+
+Features 
+
+ 🤖 AI-Driven Content Creation: Utilize the power of GPT-3.5 Turbo to generate slide content based on user's input.
+ 😎 Intelligent Slide Generation: The tool intelligently proposes titles and content for each slide.
+ 🎨 Customizable Themes: Choose color themes for your presentation, giving it a personalized touch.
+ 🙂 User-Friendly Interface: Clear instructions and an intuitive design make the PowerPoint generation process seamless and straightforward.
+
+Inner Structure of the project 
+
+If you want to learn how to use the GPT API for creating PowerPoint presentations or understand how the project is 
+organized, check out . 🧐
+In this document, I explain the code and the relationships between different parts of the code.
+
+How to use
+
+If you want to try using this project, here is a step-by-step guide. 
+Those who want to contribute to (which is welcome!), please check 
+
+
+
+Step 1: Star The Repo ⭐️
+
+
+Star the repo to start using this project 👍
+
+
+
+
+
+---
+
+
+
+Step 2: Clone It 🐑
+
+Using Git 
+
+Open your terminal and run the following command:
+
+bash
+git clone https://github.com/otahina/PowerPoint-Generator-Python-Project.git
+Using Download ZIP
+
+1. Go to the GitHub page of the repository.
+2. Click on the green Code button.
+3. In the dropdown menu, select Download ZIP.
+
+
+
+---
+
+
+Step 3: Create a Virtual Environment 📟
+
+
+On Windows 🪟
+Open your Command Prompt and navigate to your project's directory.
+Run the command line by line.
+    bash
+    python -m venv venv
+    .\venv\Scripts\activate
+    pip install -r requirements.txt
+    
+On macOS and Linux 🐧
+Open your Terminal and navigate to your project's directory.
+Run the command line by line.
+    bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    
+
+
+---
+
+
+
+Step 4: Setup API Keys 🔑
+
+
+⚠️ This step is very important to make the project work! 
+please make sure if you set up everything correctly. 
+Instruction ▶️ 
+
+
+
+---
+
+
+
+Step 5: Run 🏃‍
+
+
+Navigate to myapp directory. Run flaskapp.py
+
+bash
+python3 myapp/flaskapp.py
+
+
+
+
+How to contribute 
+
+Thank you for considering how you can contribute to the project! ✨
+
+
+
+Step 1: Star The Repo ⭐️
+
+
+Star the repo to start your contribution ⭐️
+
+
+
+
+
+---
+
+
+
+Step 2: Fork it 🍴
+
+
+On the , click on the Button "Fork".
+
+
+
+
+
+---
+
+
+
+Step 3: Clone it 🐑
+
+Method 1: GitHub Desktop
+
+> ⚠️ NOTE: If you're not familiar with Git, using GitHub Desktop Application is a better start. If you choose this method, make sure to download it before continuing reading.
+>
+> ❗❗ Access link to download .
+Method 2: Git
+
+Clone the forked repository. Open terminal (command prompt) and type:
+
+bash
+git clone https://github.com//PowerPoint-Generator-Python-Project.git
+
+
+> This makes a local copy of the repository in your machine.
+>
+> ⚠️ Replace \!
+
+
+
+---
+
+
+
+Step 4: Create your feature branch 🌴
+
+
+Always keep your local copy of the repository updated with the original repository.
+Before making any changes and/or in an appropriate interval, follow the following steps:
+Method 1: GitHub Desktop
+
+Learn more about how to create new branch  and how to fetch and pull origin from/to your local machine .
+
+Learn more about how to fetch and pull origin from/to your local machine using GitHub Desktop .
+Method 2: Git
+
+Run the following commands carefully to update your local repository.
+
+bash
+If you cloned a while ago, get the latest changes from upstream
+git checkout main
+git remote add upstream https://github.com/otahina/PowerPoint-Generator-Python-Project.git
+git pull upstream main
+
+Make a feature branch (Always check your current branch is up to date before creating a new branch from it to avoid merge conflicts)
+git checkout -b 
+
+
+---
+
+
+Step 5: Pull Request 🖐️
+
+
+1. Open the GitHub website and find your forked repository.
+2. On your fork's GitHub page, click 'New Pull Request'.
+3. Ensure the base branch is the original repository's branch you want to merge into(main branch), 
+and the compare branch is your feature branch.
+4. Click 'Create Pull Request', add a title and a brief description of your changes.
+
+Thank you for your contribution! 
+I'll check your pull request. 😀
+
+
+
+---
+
+If you want to learn more about how to contribute, visit .
+
+Setup the Secret Key and OpenAI Key 
+
+The application uses a secret key for session management and an OpenAI key for the GPT-3.5 Turbo API.
+These keys are defined as environment variables, and you can easily set them up using the provided .env.example file.
+
+1. Locate the file named .env.example in the project directory.
+2. Copy the contents of .env.example into a new file named .env.
+3. Replace the placeholder values with your actual keys:
+   
+
+SECRETKEY=yoursecretkey
+OPENAIKEY=youropenaikey
+PEXELSAPIKEY=yourpexelskey
+
+
+Here's a brief description of each key and how to obtain them:
+
+SECRETKEY: 🔐This is used for web application security such as session management. You can create your own secure, random string for this.
+
+OPENAIKEY: 🤖This is required to access the OPENAI API. Although there's a limitation with the free version, it's sufficient for trying out this web application on your local machine. You can obtain this key by creating an account on the https://platform.openai.com.
+
+PEXELSAPIKEY: 🏞️ This key is used for the free image search API provided by Pexels. It's very useful for adding creative images to your presentations. You can get this key by creating a free account on the https://www.pexels.com/api
+After registering, the API key is automatically generated for you.
+
+Community Discussions 🗣️
+Have a question, idea, or want to contribute? Join us in !
+
+Contributors ✨
+
+
+Ota Hina
+
+Gagandeep Singh
+
+
+License 📄
+
+This project is licensed under the terms of the MIT license.

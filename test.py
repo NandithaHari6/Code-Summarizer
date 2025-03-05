@@ -1,18 +1,34 @@
 import requests
 
 # The API endpoint
-url = "https://code-summarizer.onrender.com/generate_folder_summary"
+# url = "https://code-summarizer.onrender.com/generate_folder_summary"
 # url="http://127.0.0.1:8000/generate_folder_summary"
 # # Data to be sent
 # data = {
 #     "repo_link":"https://github.com/NandithaHari6/dbms-project-backend",
 #     "level":"folder"
 # }
-# url="http://127.0.0.1:8000/generate_file_summary"
+url="http://127.0.0.1:8000/generate_code_summary"
 # Data to be sent
+code="""s = "malayalam"  # string
+
+i,j = 0, len(s) - 1  # two pointers
+
+is_palindrome = True  # assume palindrome
+while i < j:
+    if s[i] != s[j]:  # mismatch found
+        is_palindrome = False
+        break
+    i += 1
+    j -= 1
+
+if is_palindrome:
+    print("Yes") 
+else:
+    print("No")   
+"""
 data = {
-    "repo_link":"https://github.com/deepankarvarma/To-Do-List-Using-Python",
-    "level":"folder",
+    "code":code
     
 }
 
