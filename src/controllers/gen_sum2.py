@@ -19,14 +19,14 @@ from controllers.API import API_KEYS
 queue = deque([(i, time.time()) for i in range(len(API_KEYS))])
 
 def load_docs(repo_link:str,repo_path:str):    
-    # repo = Repo.clone_from(repo_link, to_path=repo_path)
+    repo = Repo.clone_from(repo_link, to_path=repo_path)
     loader = GenericLoader.from_filesystem(
         repo_path ,
 
         glob="**/*",
         suffixes=[".py",".js",".jsx",".cpp",".java",".c",".cs",".rs",".rb"],
         # exclude=["**/non-utf8-encoding.py"],
-        parser=LanguageParser(max_size=10000),
+        parser=LanguageParser(),
     )
     documents = loader.load()
     return documents

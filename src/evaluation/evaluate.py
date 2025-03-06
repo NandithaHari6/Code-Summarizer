@@ -1,5 +1,5 @@
 import os
-from controllers.gen_summary import generate_summary, instantiate_llm, close_repo
+from controllers.gen_summary1 import generate_summary, instantiate_llm, close_repo
 from langchain_core.prompts import PromptTemplate
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
