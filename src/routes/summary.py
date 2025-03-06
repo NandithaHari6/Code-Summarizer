@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import FastAPI, HTTPException
 from controllers.gen_sum2 import generate_summary,close_repo,get_directory_structure,code_snippet_summary
-from controllers.prompts import code_snippet_summary
+# from controllers.prompts import code_snippet_summary
 from schema.gen_summary import SummaryRequest,CloseRepoRequest, CodeSnippet
 
 router = APIRouter()
