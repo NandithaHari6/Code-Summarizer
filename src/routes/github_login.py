@@ -3,17 +3,15 @@ from fastapi.responses import RedirectResponse
 import requests
 import os
 from dotenv import load_dotenv
-
+from github_controller.login import save_user,get_user
 load_dotenv()
 
 
 
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-REDIRECT_URI = "http://localhost:8000/github-login"
+REDIRECT_URI = "https://code-summarizer.onrender.com/github-login"
 
-# Store active sessions (Temporary)
-user_sessions = {}  # {token: github_id}
 git_router = APIRouter()
 @git_router.get("/github/login")
 def github_login():
@@ -41,30 +39,14 @@ def github_callback(code: str):
 
     access_token = token_data["access_token"]
 
-    # Get user data from GitHub API
-    user_data_response = requests.get(
-        "https://api.github.com/user",
-        headers={"Authorization": f"Bearer {access_token}"}
-    )
-    user_data = user_data_response.json()
-
-    if "id" not in user_data:
-        raise HTTPException(status_code=400, detail="Failed to fetch user data")
-
-    github_id = str(user_data["id"])
-    
-    # Store session
-    user_sessions[access_token] = github_id
+    github_id=save_user(access_token)
     FRONTEND_URL="http://localhost:5173/"
     return RedirectResponse(url=f"{FRONTEND_URL}?access_token={access_token}")
 
 @git_router.get("/protected-route")
 def protected_route(request: Request):
     """Example of a protected route"""
-    token = request.headers.get("Authorization")
+    access_token = request.headers.get("Authorization")
     
-    if not token or token not in user_sessions:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    github_id = user_sessions[token]
+    github_id=get_user(access_token)
     return {"message": "You have access!", "github_id": github_id}
