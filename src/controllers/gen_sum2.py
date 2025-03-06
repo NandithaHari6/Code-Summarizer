@@ -15,7 +15,7 @@ import time
 from collections import deque
 import os
 import time
-from code-summarizer.API import API_KEYS
+API_KEYS=[os.getenv("groq_api_key"),os.getenv("groq_api_key_2"),os.getenv("groq_api_key_3")]
 queue = deque([(i, time.time()) for i in range(len(API_KEYS))])
 
 def load_docs(repo_link:str,repo_path:str):    
@@ -187,7 +187,7 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            shutil.rmtree(repo_path,onerror=remove_readonly)
+            shutil.rmtree(repo_path)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")
