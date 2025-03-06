@@ -15,7 +15,7 @@ import time
 from collections import deque
 import os
 import time
-from controllers.API import API_KEYS
+from code-summarizer.API import API_KEYS
 queue = deque([(i, time.time()) for i in range(len(API_KEYS))])
 
 def load_docs(repo_link:str,repo_path:str):    
