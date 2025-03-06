@@ -84,9 +84,13 @@ def reduce_phase_folder_sum(llm,res):
     llm=instantiate_llm()
     reduce_prompt = PromptTemplate.from_template(reduce_template)
     reduce_chain=reduce_prompt |llm
-
-    final_sum=reduce_chain.invoke({"docs":res})
-        
+    while True:
+        try:
+            final_sum=reduce_chain.invoke({"docs":res})
+            break
+        except:
+            llm=instantiate_llm()
+            reduce_chain=reduce_prompt |llm
             
 
     return final_sum
@@ -169,10 +173,14 @@ def reduce_phase_file_sum_from_res(llm,res, documents,file_path):
     llm=instantiate_llm()
     reduce_prompt = PromptTemplate.from_template(reduce_template)
     reduce_chain=reduce_prompt |llm
-    try:
-        final_sum=reduce_chain.invoke({"docs":code_snippet_sum,"file_path":file_path})
-    except:
-        print("Error processing")
+    while True:
+        try:
+            final_sum=reduce_chain.invoke({"docs":code_snippet_sum,"file_path":file_path})
+            break
+        except:
+            llm=instantiate_llm()
+            reduce_chain=reduce_prompt |llm
+
     return final_sum        
 
 
@@ -265,12 +273,18 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
         delete_folder(repo_path)
     return final_sum.content
 def code_snippet_summary(code_snippet):
-    llm=instantiate_llm("Chatgroq")
+    llm=instantiate_llm()
     reduce_template = """The following in a small code snippet {code}. Explain the working and  functionality accurately, in detail. Don't use more than 200 words.
     """
     reduce_prompt = PromptTemplate.from_template(reduce_template)
     reduce_chain=reduce_prompt |llm
-    final_sum=reduce_chain.invoke({"code":code_snippet})    
+    while True:
+        try:
+            final_sum=reduce_chain.invoke({"code":code_snippet}) 
+            break
+        except:
+            llm= instantiate_llm()
+            reduce_chain=reduce_prompt |llm   
     return final_sum.content
     
 def close_repo(repo_link,repo_path=r"\tmp\clonedrepo"):

@@ -40,7 +40,7 @@ def github_callback(code: str):
     access_token = token_data["access_token"]
 
     github_id=save_user(access_token)
-    FRONTEND_URL="http://localhost:5173/"
+    FRONTEND_URL="http://localhost:3000/"
     return RedirectResponse(url=f"{FRONTEND_URL}?access_token={access_token}")
 
 @git_router.get("/protected-route")
