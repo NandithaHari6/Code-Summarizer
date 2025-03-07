@@ -9,9 +9,11 @@ from reqmodel.model import AddSummary
 from database.connection import get_db
 from fastapi import APIRouter, HTTPException, Depends, Request,Query
 from sqlalchemy.orm import Session
-from utils.save_sum import add_summary
-from github_controller.login import get_github_user
+from utils.save_sum import add_summary,delete_summary
+from github_controller.login import get_github_user, get_user_info,logout_user
 import httpx
+import uuid
+
 load_dotenv()
 
 
@@ -40,6 +42,7 @@ async def github_callback(code: str):
         response = await client.post(url='https://github.com/login/oauth/access_token', params=params, headers=headers)
     if response.status_code==200:
         response_json = response.json()
+
         access_token = response_json['access_token']
         if  not access_token:
             raise HTTPException(status_code=400, detail="Failed to get access token")
@@ -80,3 +83,27 @@ def display_summary(githubid: int = Depends(get_github_user),  # Now uses OAuth2
         }
         for summary in summaries
     ]
+@git_router.get("/user_info")
+def get_user_info_endpoint(res:dict= Depends(get_user_info) ):
+
+    return res
+# @git_router.delete("/delete_summary/{sumid}")
+# def delete_summary(sumid: uuid.UUID, db: Session = Depends(get_db)):
+#     delete_summary(sumid,db)
+#     return {"msg":"Successfully deleted summary "}
+
+@git_router.delete("/delete_summary/{sumid}")
+def delete_summary(sumid: uuid.UUID, db: Session = Depends(get_db)):
+    # Find the summary by sumid
+    summary = db.query(Summary).filter(Summary.sumid == sumid).first()
+
+    if not summary:
+        raise HTTPException(status_code=404, detail="Summary not found")
+
+    db.delete(summary)
+    db.commit()
+
+    return {"message": "Summary deleted successfully"}
+@git_router.get("/logout")
+def git_logout_endpoint(msg: dict= Depends(logout_user)):
+    return msg
