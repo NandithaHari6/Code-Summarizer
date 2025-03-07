@@ -4,7 +4,7 @@ const DummyLogin = () => {
     const [user, setUser] = useState(null);
 
     const handleLogin = () => {
-        window.location.href = "http://localhost:8000/github-login";
+        window.location.href = "https://code-summarizer.onrender.com/github-login";
     };
     const checkForCode = () => {
         const query = new URLSearchParams(window.location.search);
