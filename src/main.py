@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-
 from routes import summary
 from fastapi.middleware.cors import CORSMiddleware
-
+from routes import github_login
 app = FastAPI()
 origins = [
     "http://localhost:5173",  # Allow Vite frontend
@@ -17,4 +16,6 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+
 app.include_router(summary.router)
+app.include_router(github_login.git_router)

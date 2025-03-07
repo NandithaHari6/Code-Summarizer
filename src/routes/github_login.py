@@ -1,52 +1,82 @@
-from fastapi import  HTTPException, Request, APIRouter
+
 from fastapi.responses import RedirectResponse
 import requests
 import os
+from database.model import Summary
 from dotenv import load_dotenv
-from github_controller.login import save_user,get_user
+from github_controller.login import save_user
+from reqmodel.model import AddSummary
+from database.connection import get_db
+from fastapi import APIRouter, HTTPException, Depends, Request,Query
+from sqlalchemy.orm import Session
+from utils.save_sum import add_summary
+from github_controller.login import get_github_user
+import httpx
 load_dotenv()
 
 
 
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-REDIRECT_URI = "https://code-summarizer.onrender.com/github-login"
+REDIRECT_URI = "https://code-summarizer.onrender.com/github-code"
 
 git_router = APIRouter()
-@git_router.get("/github/login")
-def github_login():
-    """Redirect user to GitHub for authentication."""
-    github_auth_url = f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&redirect_uri={REDIRECT_URI}"
-    return RedirectResponse(url=github_auth_url)
-
 @git_router.get("/github-login")
-def github_callback(code: str):
-    """GitHub OAuth callback to exchange code for an access token."""
-    token_url = "https://github.com/login/oauth/access_token"
-    headers = {"Accept": "application/json"}
-    payload = {
-        "client_id": GITHUB_CLIENT_ID,
-        "client_secret": GITHUB_CLIENT_SECRET,
-        "code": code,
-        "redirect_uri": REDIRECT_URI
+def github_login_endpoint():
+    """Redirect user to GitHub for authentication."""
+    github_auth_url =  f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+    headers = {'Content': 'application/json'}
+    return RedirectResponse(url=github_auth_url,headers=headers)
+
+@git_router.get("/github-code")
+async def github_callback(code: str):
+    params ={
+        'client_id': GITHUB_CLIENT_ID,
+        'client_secret': GITHUB_CLIENT_SECRET,
+        'code': code
     }
-    
-    response = requests.post(token_url, headers=headers, data=payload)
-    token_data = response.json()
-    
-    if "access_token" not in token_data:
-        raise HTTPException(status_code=400, detail="Failed to get access token")
-
-    access_token = token_data["access_token"]
-
-    github_id=save_user(access_token)
-    FRONTEND_URL="http://localhost:3000/"
+    headers = {'Accept': 'application/json'}
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url='https://github.com/login/oauth/access_token', params=params, headers=headers)
+    if response.status_code==200:
+        response_json = response.json()
+        access_token = response_json['access_token']
+        if  not access_token:
+            raise HTTPException(status_code=400, detail="Failed to get access token")
+        github_id=save_user(access_token)
+    FRONTEND_URL="http://localhost:3000/login"
     return RedirectResponse(url=f"{FRONTEND_URL}?access_token={access_token}")
 
-@git_router.get("/protected-route")
-def protected_route(request: Request):
-    """Example of a protected route"""
-    access_token = request.headers.get("Authorization")
+
+@git_router.post("/save_summary")
+async def save_summary(
+    summary: AddSummary, 
+    githubid: int = Depends(get_github_user),  # Now uses OAuth2 Bearer Token
+    db: Session = Depends(get_db)
+):
+    """Protected route that stores a summary in the database."""
+    new_summary = add_summary(db, summary, githubid)
+    return {
+        "message": "Summary added successfully",
+        "githubid": new_summary.githubid,
+        "repo_link": new_summary.repo_link,
+        "summary": new_summary.summary,
+        "level": new_summary.level,
+    }
+@git_router.get("/view_saved_sum")
+def display_summary(githubid: int = Depends(get_github_user),  # Now uses OAuth2 Bearer Token
+    db: Session = Depends(get_db)):
+   
+    summaries = db.query(Summary).filter(Summary.githubid == githubid).all()
+    if not summaries:
+        raise HTTPException(status_code=404, detail="No summaries found for this GitHub ID")
     
-    github_id=get_user(access_token)
-    return {"message": "You have access!", "github_id": github_id}
+    return [
+        {
+            "sumid": str(summary.sumid),
+            "repo_link": summary.repo_link,
+            "level": summary.level,
+            "summary": summary.summary
+        }
+        for summary in summaries
+    ]
