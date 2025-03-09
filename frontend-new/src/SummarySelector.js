@@ -7,12 +7,13 @@ import {
   MenuItem,
   CircularProgress,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+
+import { useLocation, useNavigate } from "react-router-dom"; 
 
 function SummarySelector() {
   const location = useLocation();
   const repoURL = new URLSearchParams(location.search).get("repoURL");
-
+  const navigate = useNavigate();
   const [selectedSummary, setSelectedSummary] = useState("Project Level");
   const [anchorEl, setAnchorEl] = useState(null);
   const [repoFiles, setRepoFiles] = useState([]);
@@ -167,7 +168,7 @@ function SummarySelector() {
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "green" }}>
           Summary Options
         </Typography>
-
+       
         <Button
           variant="contained"
           sx={{ backgroundColor: "green", color: "white", borderRadius: "20px", width: "100%" }}
@@ -178,7 +179,7 @@ function SummarySelector() {
 
         <Button
           variant="contained"
-          sx={{ backgroundColor: "gray", color: "white", borderRadius: "20px", width: "100%" }}
+          sx={{ backgroundColor: "green", color: "white", borderRadius: "20px", width: "100%" }}
           onClick={(e) => {
             setAnchorEl(e.currentTarget);
             fetchRepoFiles();
@@ -186,7 +187,14 @@ function SummarySelector() {
         >
           File Level ▼
         </Button>
+        <Button
+  variant="contained"
+  sx={{ backgroundColor: "green", color: "white", borderRadius: "20px", width: "100%" }}
+  onClick={() => navigate("/codesummary")}
 
+>
+Code Level
+</Button>
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}

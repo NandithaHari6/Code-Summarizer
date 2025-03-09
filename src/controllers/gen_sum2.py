@@ -6,6 +6,7 @@ from langchain_text_splitters import Language
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
+from controllers.splitters import split_text_list, split_document
 from controllers.redis_cache import save_file_structure_to_redis, load_file_structure_from_redis,save_docs_to_redis, load_docs_from_redis, delete_docs_from_redis
 import shutil
 import requests
@@ -14,6 +15,8 @@ load_dotenv()
 import time
 from collections import deque
 import os
+
+import tiktoken 
 import time
 API_KEYS=[os.getenv("groq_api_key"),os.getenv("groq_api_key_2"),os.getenv("groq_api_key_3")]
 queue = deque([(i, time.time()) for i in range(len(API_KEYS))])
@@ -54,46 +57,164 @@ def instantiate_llm():
             queue.append((index, time.time() + 120))  # Re-add with 2s delay
             return llm
     return llm
-def map_phase(llm,documents):
-    map_template = """You are a senior software engineer working on this project, with experience of handling various code bases, in different programming languages. Explain the functionality of the code to a junior software developer, who recently joined your team and is viewing this code base for the first time 
-    {docs}
-    Explain in just 2 to 3 sentences,just the thing in the code alone. Do not add your own logic  .Do not include meta data information and code snippet . Just the sentence explaination is enough"""
-    map_prompt = PromptTemplate.from_template(map_template)
-    map_chain = map_prompt |llm
-    i=0
-    res=[0]*len(documents)
+# def map_phase(llm,documents):
+#     map_template = """You are a senior software engineer working on this project, with experience of handling various code bases, in different programming languages. Explain the functionality of the code to a junior software developer, who recently joined your team and is viewing this code base for the first time 
+#     {docs}
+#     Explain in just 2 to 3 sentences,just the thing in the code alone. Do not add your own logic  .Do not include meta data information and code snippet . Just the sentence explaination is enough"""
+#     map_prompt = PromptTemplate.from_template(map_template)
+#     map_chain = map_prompt |llm
+#     i=0
+#     res=[0]*len(documents)
 
-    while i<len(documents):
-    #    print(map_chain.invoke({"docs":documents[i]}).content)
+#     while i<len(documents):
+#     #    print(map_chain.invoke({"docs":documents[i]}).content)
 
-        print(documents[i].metadata)
-        try:
-            res[i]=map_chain.invoke({"docs":documents[i]}).content
-            i+=1
-        except:
-            print("Calling new llm")
-            llm=instantiate_llm()
-            map_chain = map_prompt |llm
-    return res
+#         print(documents[i].metadata)
+#         try:
+#             res[i]=map_chain.invoke({"docs":documents[i]}).content
+#             i+=1
+#         except Exception as e:
+#             print(e)
+#             print("Calling new llm")
+#             llm=instantiate_llm()
+#             map_chain = map_prompt |llm
+#     return res
     # Reduce
-def reduce_phase_folder_sum(llm,res):
-    reduce_template = """The following is set of summaries of small code snippets of that are part of a single project
+# Uncomment if using OpenAI models
+
+def count_tokens(text):
+    """Returns the approximate number of tokens in the text."""
+    try:
+        encoding = tiktoken.get_encoding("cl100k_base")  # OpenAI GPT-4 tokenizer
+        return len(encoding.encode(text))
+    except ImportError:
+        return len(text.split())  # Fallback: count words as an approximation
+
+
+
+
+
+def map_phase(llm, documents, repo_link):
+    """Processes documents, stores summaries in Redis, and resumes if interrupted."""
+    map_template = """You are a senior software engineer working on this project, with experience handling various code bases in different programming languages. Explain the functionality of the code to a junior developer viewing this code base for the first time.
     {docs}
-    Take these and distill it into a final, consolidated summary of the main themes. 
-    """
-    llm=instantiate_llm()
-    reduce_prompt = PromptTemplate.from_template(reduce_template)
-    reduce_chain=reduce_prompt |llm
-    while True:
+    Explain in just 2 to 3 sentences, only describing the code functionality. Do not add your own logic, metadata, or code snippets."""
+    
+    map_prompt = PromptTemplate.from_template(map_template)
+    map_chain = map_prompt | llm
+
+    # Load cached results
+    cached_data = load_docs_from_redis(repo_link)
+    cached_res = cached_data.get("res", []) if cached_data else []
+    completed = cached_data.get("completed", False) if cached_data else False
+
+    # If already completed, return cached results
+    if completed:
+        return cached_res
+
+    i = len(cached_res)  # Start from where it left off
+
+    while i < len(documents):
+        doc = documents[i]
+        print(doc.metadata)
+
         try:
-            final_sum=reduce_chain.invoke({"docs":res})
+            response = map_chain.invoke({"docs": doc}).content
+
+            # Store only metadata and summary
+            cached_res.append({"metadata": doc.metadata, "summary": response})
+
+            # Save progress in Redis
+            save_docs_to_redis(repo_link, cached_res, completed=False)
+            i += 1
+        except Exception as e:
+            print(e)
+            if "413" in str(e):  # Check if error is 413 (Payload Too Large)
+                print(f"Splitting document: {doc.metadata}")
+                split_docs = split_document(doc)
+                documents[i:i+1] = split_docs
+            else:
+                print("Calling new LLM instance")
+                llm = instantiate_llm()
+                map_chain = map_prompt | llm
+
+    # Mark as completed
+    save_docs_to_redis(repo_link, cached_res, completed=True)
+    return cached_res
+def reduce_phase_folder_sum(llm, res_list:list):
+    """
+    Iteratively reduces a list of summaries to a final summary using token-limited chunking.
+    """
+    reduce_template = """The following is a set of summaries of small code snippets that are part of a single project:
+    {docs}
+    Take these and distill them into a final, consolidated summary of the main themes.
+    """
+    res=[]
+    for ele in res_list:
+        res.append(ele["summary"])
+  
+    llm = instantiate_llm()
+    reduce_prompt = PromptTemplate.from_template(reduce_template)
+    reduce_chain = reduce_prompt | llm
+
+    # Step 1: Split `res` into token-limited chunks
+    res_chunks = split_text_list(res)
+    print(type(res_chunks))
+    i=0
+    summary_store = " "
+    while i<len(res_chunks) :  # Keep summarizing until we get a single summary
+        
+        
+        chunk=res_chunks[i]
+
+        try:
+            summary = reduce_chain.invoke({"docs": chunk}).content
+            
+            summary_store+=(summary)
+            print(summary)
+            i+=1
             break
-        except:
-            llm=instantiate_llm()
-            reduce_chain=reduce_prompt |llm
+        except Exception as e:
+            print(e)
+            if "413" in str(e):  # If payload is too large, split again
+                print("Splitting text due to token limit exceeded.")
+                split_chunks = split_text_list([chunk])  # Split the large chunk
+                res_chunks.extend(split_chunks)
+                
+            else:
+                print(e)
+                llm = instantiate_llm()
+                reduce_chain = reduce_prompt | llm
             
 
-    return final_sum
+         # Ensure token limit after summarization
+
+    return (summary_store)  #
+
+# def reduce_phase_folder_sum(llm,res):
+#     reduce_template = """The following is set of summaries of small code snippets of that are part of a single project
+#     {docs}
+#     Take these and distill it into a final, consolidated summary of the main themes. 
+#     """
+#     llm=instantiate_llm()
+#     reduce_prompt = PromptTemplate.from_template(reduce_template)
+#     reduce_chain=reduce_prompt |llm
+#     while True:
+#         try:
+#             final_sum=reduce_chain.invoke({"docs":res})
+#             break
+#         except Exception as e:
+#             if "413" in str(e): 
+#                 doc=code_snippet_doc[i] # Check if error is 413 (Payload Too Large)
+#                 print(f"Splitting document: {doc.metadata}")
+#                 split_docs = split_document(res)
+#                 code_snippet_doc[i:i+1] = split_docs
+#             print(e)
+#             llm=instantiate_llm()
+#             reduce_chain=reduce_prompt |llm
+            
+
+#     return final_sum
 def reduce_phase_file_sum(llm,documents,file_path):
     j=0
     code_snippet_doc=[0]
@@ -112,9 +233,15 @@ def reduce_phase_file_sum(llm,documents,file_path):
         try:
             code_snippet_sum[i]=map_chain.invoke(code_snippet_doc[i])
             i+=1
-        except:
-            llm=instantiate_llm()
-            map_chain = map_prompt |llm  
+        except Exception as e:
+            if "413" in str(e): 
+                doc=code_snippet_doc[i] # Check if error is 413 (Payload Too Large)
+                print(f"Splitting document: {doc.metadata}")
+                split_docs = split_document(doc)
+                code_snippet_doc[i:i+1] = split_docs
+            else:
+                llm=instantiate_llm()
+                map_chain = map_prompt |llm  
     reduce_template = """The following is set of summaries of small code snippets of the file , {file_path} that is a part of a big project .
     {docs}
     Take thses and come up with a summmary of the functionality of the code in this file alone. Explain each function in detail. Don't use more than 200 words.
@@ -133,7 +260,7 @@ def load_single_file(repo_link: str, file_path: str):
     # Convert GitHub repo link to raw file URL
     repo_owner, repo_name = repo_link.rstrip('/').split('/')[-2:]
     raw_url = f"https://raw.githubusercontent.com/{repo_owner}/{repo_name}/main/{file_path}"  # Assumes 'main' branch
-
+    # raw_url='https://raw.githubusercontent.com/NandithaHari6/Price-comparison-website/refs/heads/main/deleteDb.py'
     # Download file content
     response = requests.get(raw_url)
     if response.status_code != 200:
@@ -162,7 +289,7 @@ def reduce_phase_file_sum_from_res(llm,res, documents,file_path):
     code_snippet_sum=[0]*len(documents)
   
     for i in range(len(res)):
-        if file_path == documents[i].metadata['source']:
+        if file_path == res[i].metadata['source']:
             code_snippet_sum[j]=res[i]
             j=j+1
         
@@ -206,6 +333,7 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
     
     # Check Redis cache first
     cached_docs = load_file_structure_from_redis(repo_link)
+    print(cached_docs["completed"])
     if cached_docs:
         return cached_docs["file_structure"]
     
@@ -244,34 +372,37 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
     documents={}
     
     llm=instantiate_llm()
+    print(cached_docs)
     if cached_docs:
         print("Loading data from Redis cache...")
-        documents = cached_docs["documents"]
-        res = cached_docs["res"]
-    elif not cached_docs and level=="folder": 
+        if cached_docs["completed"]:
+
+            res = cached_docs["res"]
+    elif( not cached_docs or cached_docs["completed"]==False) and level=="folder": 
         docs = load_docs(repo_link, repo_path)
-        res=map_phase(llm,docs)
-       
-        save_docs_to_redis(repo_link, docs,res)  # Store in Redis
+        res=map_phase(llm,docs,repo_link)
         
     print("Len of documents")
     print(len(documents))
     #Map reduce
     if level=="folder":
         final_sum=reduce_phase_folder_sum(llm,res)
-        print(final_sum.content)
+        print(final_sum)
     elif level=="file":
         if cached_docs:
-            final_sum=reduce_phase_file_sum_from_res(llm,res,documents,file_path)
+            final_sum=reduce_phase_file_sum_from_res(llm,res,file_path)
             print(final_sum.content)
+            final_sum=final_sum.content
         else:             
-            extracted_path = file_path.replace("/tmp/cloned/", "", 1)
+            extracted_path = file_path.replace("/tmp/clonedfile/", "", 1)
             documents=load_single_file(repo_link,extracted_path)
+            print(len(documents))
             final_sum=reduce_phase_file_sum(llm,documents,file_path)
             print(final_sum.content) 
+            final_sum=final_sum.content
     if os.path.exists(repo_path):
         delete_folder(repo_path)
-    return final_sum.content
+    return final_sum
 def code_snippet_summary(code_snippet):
     llm=instantiate_llm()
     reduce_template = """The following in a small code snippet {code}. Explain the working and  functionality accurately, in detail. Don't use more than 200 words.

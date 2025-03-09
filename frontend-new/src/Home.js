@@ -16,8 +16,6 @@ function Home() {
     }
 
     console.log("Navigating to SummarySelector with repoURL:", repoURL);
-
-    // Navigate to SummarySelector with repoURL as a query parameter
     navigate(`/summary-selector?repoURL=${encodeURIComponent(repoURL)}`);
   };
 
@@ -36,6 +34,42 @@ function Home() {
         position: "relative",
       }}
     >
+      {/* Profile Button (Top Left) */}
+      <Button
+        variant="contained"
+        onClick={() => navigate("/profile")}
+        sx={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          backgroundColor: "green",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "20px",
+          "&:hover": { backgroundColor: "darkgreen" },
+        }}
+      >
+        Profile
+      </Button>
+
+      {/* Login Button (Top Right) */}
+      <Button
+        variant="contained"
+        onClick={() => (window.location.href = "http://localhost:3000/login")}
+        sx={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          backgroundColor: "green",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "20px",
+          "&:hover": { backgroundColor: "darkgreen" },
+        }}
+      >
+        Login
+      </Button>
+
       <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "white" }}>
         <span style={{ color: "green" }}>Code Essence</span>
       </Typography>
@@ -75,6 +109,17 @@ function Home() {
       >
         Summarize
       </Button>
+
+      {/* Navigation to Code Level Summary */}
+      <Typography sx={{ color: "green", mt: 2, fontWeight: "bold" }}>
+        If you want to summarize any code, click on{" "}
+        <span
+          style={{ textDecoration: "underline", cursor: "pointer" }}
+          onClick={() => navigate("/CodeSummary")}
+        >
+          Code Level
+        </span>
+      </Typography>
 
       {/* Error Message */}
       {error && (

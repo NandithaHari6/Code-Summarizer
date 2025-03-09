@@ -10,7 +10,9 @@ def get_github_user(token: str = Depends(oauth2_scheme)):
     if  token  in user_sessions:
         return user_sessions[token] 
     else:
-        save_user()
+        github_id=save_user()
+        if not github_id:
+             raise HTTPException(status_code=400, detail="Invalid access token.")
         
     return user_sessions[token]  
 def save_user(access_token):
@@ -30,7 +32,9 @@ def save_user(access_token):
     user_sessions[access_token] = github_id
     return github_id
 def get_user_info(access_token: str = Depends(oauth2_scheme)):
-   
+    if  access_token not in user_sessions:
+        raise HTTPException(status_code=400, detail="invalid access token. can't be authorized")
+
     user_data_response = requests.get(
         "https://api.github.com/user",
         headers={"Authorization": f"Bearer {access_token}"}

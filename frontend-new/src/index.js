@@ -6,7 +6,7 @@ import SummarySelector from "./SummarySelector";
 import LoginPage from "./LoginPage";
 import DummyLogin from "./DummyLogin"; // Ensure this file exists
 import Profile from "./Profile"; // Ensure this file exists
-
+import CodeSummary from "./CodeSummary";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
@@ -16,8 +16,8 @@ root.render(
         <Route path="/summary-selector" element={<SummarySelector />} />
         <Route path="/login" element={<DummyLogin />} /> {/* Login Page */}
         <Route path="/profile" element={<Profile />} /> {/* User Profile */}
+        <Route path="/CodeSummary" element={<CodeSummary />} />
       </Routes>
     </Router>
   </React.StrictMode>
 );
-

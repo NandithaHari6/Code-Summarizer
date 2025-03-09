@@ -7,7 +7,7 @@ from database.connection import Base, engine
     
 class Summary(Base):
     __tablename__ = 'summary'
-    
+     
     githubid = Column(Integer, nullable=False)
     sumid = Column(UUID(as_uuid=True),primary_key=True, default=uuid.uuid4)
     repo_link=Column(String)
