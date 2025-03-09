@@ -16,3 +16,5 @@ tree_sitter
 tree_sitter_languages
 redis
 scikit-learn
+tiktoken
+json
