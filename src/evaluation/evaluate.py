@@ -1,5 +1,5 @@
 import os
-from controllers.gen_summary1 import generate_summary, instantiate_llm, close_repo
+from controllers.gen_sum2 import generate_summary, instantiate_llm
 from langchain_core.prompts import PromptTemplate
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -21,13 +21,13 @@ github_link = [
 mydir = os.getcwd()  # Get the current directory 
 
 
-llm=instantiate_llm("Chatgroq")
+llm=instantiate_llm()
 extract_details_template = """You are a summary generation assisstent. Given the summary of a large project, extract Project overview, its main funcions and technology stack used in developing the project.The summary is {summary}  . No need of any other sentences in the response.Return the results in JSON format with the following keys only: Overview, Functional Overview, Technology Stack. 
 - Exclude the Mermaid diagrams, such as sequence diagrams, flowcharts from extractions
 - Never add ```json on the beginning and do not add ``` at the end
     """
 extract_prompt = PromptTemplate.from_template(extract_details_template)
-extract_chain=extract_prompt |llm
+extract_chain=extract_prompt|llm
 def compute_similarity(ref_json, gen_json):
     fields = ["Overview", "Functional Overview", "Technology Stack"]
     vectorizer = TfidfVectorizer()

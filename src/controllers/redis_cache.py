@@ -22,7 +22,7 @@ def load_docs_from_redis(repo_link):
 
 def save_docs_to_redis(repo_link, cached_res, completed=False):
     """Store results along with completion flag in Redis."""
-    redis_client.set(repo_link, json.dumps({"res": cached_res, "completed": completed}))
+    redis_client.setex(repo_link,3600, json.dumps({"res": cached_res, "completed": completed}))
 def delete_docs_from_redis(repo_link):
     redis_client.delete(repo_link)
 def display_redis_keys():
@@ -41,8 +41,12 @@ def display_value(key):
         print("No value associated with the key")
 
 # Call the function to display keys
-display_redis_keys()
+
 # save_docs_to_redis("nandu",[1,2,3])
 # store_res_to_redis("nandu",[4,5,6])
 # print(load_docs_from_redis("https://github.com/NandithaHari6/dbms-project-backend"))
-# delete_docs = delete_docs_from_redis("https://github.com/NandithaHari6/dbms-project-backend")
+# delete_docs = delete_docs_from_redis("https://github.com/deepankarvarma/To-Do-List-Using-Python")
+# delete_docs = delete_docs_from_redis("https://github.com/adityasurya4103/Clinic-Hospital-Management-System-")
+# delete_docs = delete_docs_from_redis("nandu")
+# delete_docs = delete_docs_from_redis("number")
+# display_redis_keys()
