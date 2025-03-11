@@ -349,10 +349,11 @@ def load_single_file(repo_link: str, file_path: str):
 def reduce_phase_file_sum_from_res(llm,res,file_path):
     j=0
     code_snippet_sum=[0]*len(res)
-  
+    print(res[0])
     for i in range(len(res)):
-        if file_path == res[i].metadata['source']:
-            code_snippet_sum[j]=res[i]
+        curr_res=res[i]["metadata"]
+        if file_path == curr_res['source']:
+            code_snippet_sum[j]=res[i]["summary"]
             j=j+1
         
     reduce_template = """The following is set of summaries of small code snippets of the file , {file_path} that is a part of a big project .
@@ -384,7 +385,7 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            shutil.rmtree(repo_path,onerror=remove_readonly)
+            shutil.rmtree(repo_path)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")
