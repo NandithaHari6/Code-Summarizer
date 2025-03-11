@@ -23,7 +23,7 @@ mydir = os.getcwd()  # Get the current directory
 
 llm=instantiate_llm()
 extract_details_template = """You are a summary generation assisstent. Given the summary of a large project, extract Project overview, its main funcions and technology stack used in developing the project.The summary is {summary}  . No need of any other sentences in the response.Return the results in JSON format with the following keys only: Overview, Functional Overview, Technology Stack. 
-- Exclude the Mermaid diagrams, such as sequence diagrams, flowcharts from extractions
+- Exclude the diagrams, such as sequence diagrams, flowcharts from extractions
 - Never add ```json on the beginning and do not add ``` at the end
     """
 extract_prompt = PromptTemplate.from_template(extract_details_template)
@@ -46,19 +46,26 @@ def compute_similarity(ref_json, gen_json):
     print(scores)
     return sum(scores) / len(scores)  # Average similarity score    
 for i in range(len(github_link)):
-    myfile = f"evaluation/eval_files/eval_files{i}.txt"
-    file_path = os.path.join(mydir, myfile)
-    with open(file_path, "r") as f:
-        ref_summary = f.read()  # Read file content
-    
-    ref_json=extract_chain.invoke({"summary":ref_summary})
-    
-    generated_summary=generate_summary(repo_link=github_link[i], level="folder")
-    gen_json=extract_chain.invoke({"summary":generated_summary})
-    # print(f"Ref summary :{ref_json.content}")
-    # print(f"Generated Summary:{gen_json.content}")
-    # print(json.loads(ref_json.content))
-    score = compute_similarity(json.loads(ref_json.content), json.loads(gen_json.content))
-    print(f"Similarity Score for repo {github_link[i]}: {score:.4f}")
-    
+    repo = github_link[i]
+    cache_data = load_from_cache(repo)
 
+    if cache_data:
+        ref_summary = cache_data["ref_summary"]
+        gen_summary = cache_data["gen_summary"]
+        print(f"Loaded cached summaries for {repo}")
+    else:
+        myfile = f"evaluation/eval_files/eval_files{i}.txt"
+        file_path = os.path.join(mydir, myfile)
+
+        with open(file_path, "r") as f:
+            ref_summary = f.read()
+
+        
+        generated_summary = generate_summary(repo_link=repo, level="folder")
+        
+
+        store_to_cache(repo, ref_json.content, gen_json.content)
+    ref_json = extract_chain.invoke({"summary": ref_summary})
+    gen_json = extract_chain.invoke({"summary": generated_summary})
+    score = compute_similarity(json.loads(ref_json.content), json.loads(gen_json.content))
+    print(f"Similarity Score for repo {repo}: {score:.4f}")

@@ -56,7 +56,7 @@ def instantiate_llm():
             print("Index used", index)
             queue.append((index, time.time() + 120))  # Re-add with 2s delay
             return llm
-    return llm
+    return 
 # def map_phase(llm,documents):
 #     map_template = """You are a senior software engineer working on this project, with experience of handling various code bases, in different programming languages. Explain the functionality of the code to a junior software developer, who recently joined your team and is viewing this code base for the first time 
 #     {docs}
@@ -252,12 +252,12 @@ def reduce_phase_folder_sum(llm,res):
 {docs}  .
 
 Analyze these snippets, extract the core themes, and distill them into a final, well-structured summary.  
-
 The final summary should follow this format:  
-- *Project Title:* A concise and descriptive title reflecting the project's purpose.  
-- *Tech Stack Used:* List the programming languages, frameworks, libraries, and tools utilized.  
-- *Project Overview:* A brief explanation of the project's goal, functionality, and intended audience.  
-- *File & Folder Breakdown:* A structured summary of the project's key directories and files, along with their roles.
+- Project Title: A concise and descriptive title reflecting the project's purpose.  
+- Tech Stack Used: List the programming languages, frameworks, libraries, and tools utilized.  
+- Project Overview: A brief explanation of the project's goal, functionality, and intended audience.  
+- File & Folder Breakdown: A structured summary of the project's key directories and files, along with their roles.
+Ensure readability with proper indentation and bullet points.
  """
     llm=instantiate_llm()
     reduce_prompt = PromptTemplate.from_template(reduce_template)
@@ -384,7 +384,7 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            shutil.rmtree(repo_path, onerror=remove_readonly)
+            shutil.rmtree(repo_path)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")

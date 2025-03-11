@@ -1,6 +1,9 @@
 import redis
 import json
 
+import os
+
+# Initialize Redis connection
 REDIS_URL="rediss://red-cucgbk3qf0us73cb954g:tP7yEM8hK01CfjLUYIXeTt9TFWgCvJ07@oregon-redis.render.com:6379"
 redis_client = redis.StrictRedis.from_url(REDIS_URL)
 def save_file_structure_to_redis(repo_link, structure):
