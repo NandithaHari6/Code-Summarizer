@@ -1,211 +1,55 @@
-ExpenseOwl
+WeatherVista - Interactive Weather App
 
- 
- 
+Overview
 
+Welcome to WeatherVista, a cutting-edge and user-friendly weather prediction app. WeatherVista not only provides accurate weather forecasts but also offers an engaging and intuitive user experience.
 
+Features:
+Responsive Design: Enjoy a seamless experience across various devices with WeatherVista's responsive UI.
+Dynamic Weather Icons: Visualize real-time weather conditions with dynamic icons for a more immersive experience.
+Hourly and Weekly Forecasts: Plan your schedule confidently with detailed hourly and weekly forecasts.
+Today's Highlights: Stay informed about key weather highlights, including UV Index, Wind Status, Sunrise & Sunset, Humidity, Visibility, and Air Quality.
+Search Functionality: Easily search for weather updates in any location globally.
 
-ExpenseOwl is an extremely simple expense tracking system with a modern monthly pie-chart visualization. It tracks daily expenses, visualizes monthly spending patterns, and maintains an overview of financial habits.
+Experience WeatherVista
 
----
-Why Create This?
-
-There are a ton of amazing projects for expense tracking across GitHub (, , etc.). They're all incredible, but they aren't the fastest when trying to add expenses and offer many features I don't use. Some use varying formats of data or complex APIs. Don't get me wrong, they're great when needed, but I wanted something dead simple that only gives me a monthly pie chart and a tabular representation. NOTHING else!
-
-Hence, I created this project, which I use in my home lab to track my expenses. The data is just JSON, so I can do whatever I want with it, including using jq to convert to CSV. The UI is elegant and mobile-friendly.
-
-This app's intention is to track spending across your categories in a simplistic manner. There is no complicated searching or editing - just add, delete, and view! This intention will not change throughout the project's lifecycle. This is not an app for budgeting; it's for tracking.
-
-Features
-
-Core Functionality
-Simple expense tracking with essential details only (optional name, date without time, amount, and category)
-UUID-based expense identification in the backend
-Flat file storage system (data/expenses.json)
-Multi-architecture Docker container with support for persistent storage
-REST API for expense management
-Single-user focused (mainly for a home lab deployment)
-CSV export of all expense data from the UI
-CLI for both server and client (if needed) operations
-Custom categories via environment variable (EXPENSECATEGORIES) with sensible defaults
-Custom currency symbol in the frontend via environment variable (CURRENCY)
-
-Visualization
-
-1. Dashboard with expense category breakdown (pie chart)
-Click on a category to exclude it from the graph, click again to add it back
-This helps visualize the breakdown without considering some categories like Rent
-The legend shows the total expenditure of the month along with the total without the "Rent" category
-2. Table view for detailed expense listing
-This is where you can view individual expenses chronologically and delete them
-You can use the browser's search to find a name if needed
-3. Month-by-month navigation
-
-Progressive Web App (PWA)
-
-The front end of ExpenseOwl can be installed as a Progressive Web App on desktop and mobile devices (i.e., the back end still needs to be self-hosted). To install:
-Desktop: Click the install icon in your browser's address bar
-iOS: Use Safari's "Add to Home Screen" option in the share menu
-Android: Use Chrome's "Install" option in the menu
-
-Intention of Use
-
-I reiterate that you should use this to add expenses quickly. The default name for an expense is unnamed, and the date is automatically set to today. There's a default list of categories, which can be edited easily through an environment variable.
-
-In the ideal case, enter the amount and choose the category - that's it!
-
-For a bit more involved case, enter the amount and name, choose the category, and select the date - still very simple!
-
-The application only allows addition and deletion; there's no need for editing. There are no tags, wallet info, budgeting, or anything else! Plain and simple for the win.
+🌦️ Explore the WeatherVista Demo:  🌈
 
 Screenshots
 
-| | Desktop View | Mobile View |
-| --- | --- | --- |
-| Dashboard Light |  |  |
-| Dashboard Dark |  |  |
-| Table Light |  |  |
-| Table Dark |  |  |
-
-The interface automatically adapts to system preferences for themes.
-
-Installation
-
-Go Install
-
-bash
-go install github.com/tanq16/expenseowl/cmd/expenseowl@latest
 
 
-Docker Installation
-
-bash
-docker pull tanq16/expenseowl:main
 
 
-bash
-docker run -d \
---name expenseowl \
--p 8080:8080 \
--e EXPENSECATEGORIES="Rent,Food,Transport,Fun,Bills" \
--e CURRENCY=jpy \
--v expenseowldata:/app/data \
-tanq16/expenseowl:main EXPENSECATEGORIES, CURRENCY are optional configs
+Getting Started
 
-
-To use it with Docker compose or a container-management system like Portainer or Dockge, use this YAML definition:
-
-yaml
-version: "3.8"
-services:
-  budgetlord:
-    image: tanq16/expenseowl:main
-    restart: unless-stopped
-    ports:
-5006:8080
-    volumes:
-/home/tanq/expenseowl:/app/data CHANGE DIR
-
-
-Building from Source
-
-bash
-git clone https://github.com/tanq16/expenseowl.git && \
-cd expenseowl
-
-
-bash
-go build ./cmd/expenseowl
-
+1. Clone the repository: git clone https://github.com/wasimtikki120/WeatherVista-Interactive-Weather-App.git
+2. Open index.html in your preferred browser to launch the app.
 
 Usage
-
-Ideally, once deployed, use the web interface and you're good to go. Access the web interface through your browser:
-Dashboard: http://localhost:8080/
-Table View: http://localhost:8080/table
-
-> [!NOTE]
-> This app has no authentication, so deploy carefully. It works very well with a reverse proxy like Nginx Proxy Manager and is mainly intended for home lab use. The app has not undergone a pentest to allow for any production deployment. It should strictly be deployed in home lab settings, behind authentication, and for only one (or a few non-destructive) user(s).
-
-If command-line automations are required for use with the REST API, read on!
-
-CLI Mode
-
-The application binary can run in either server or client mode:
-
-Server Mode (Default):
-
-bash
-./expenseowl
-or explicitly
-./expenseowl -serve
-or from a custom directory
-./expenseowl -data /custom/path
+Enter a location in the search bar to get the current weather details for that area.
+Switch between hourly and weekly forecasts for detailed weather information.
+Explore the highlight cards to learn more about today's weather insights.
 
 
-Client Mode:
+License
 
-bash
-./expenseowl -client -addr localhost:8080
-
-
-In client mode, you'll be prompted to enter the expense name, category (select from a list), amount, and date (in YYYY-MM-DD; optional, sets to the current date when not provided).
-
-REST API
-
-Add Expense:
-
-bash
-curl -X PUT http://localhost:8080/expense \
--H "Content-Type: application/json" \
--d '{
- "name": "Groceries",
- "category": "Food",
- "amount": 75.50,
- "date": "2024-03-15T14:30:00Z"
-}'
+WeatherVista is licensed under the .
+Feel free to customize and use it in your projects. 
 
 
-Get All Expenses:
-
-bash
-curl http://localhost:8080/expenses
+Author
 
 
-Config Options
 
-Currency Settings
+Contribution
 
-ExpenseOwl supports multiple currencies through the CURRENCY environment variable. If not specified, it defaults to USD ($). For example, to run with Euro, use the following environment variable:
+Contributions are welcome! Please check our .
 
-bash
-CURRENCY=eur ./expenseowl
+Support
 
+If you encounter any issues or have suggestions, .
 
-Similarly, the environment variable can be set in a compose stack or using -e in the command line with a Docker command. The full list of supported currencies is in .
+About
 
-Category Settings
-
-ExpenseOwl also supports custom categories, which can be specified through environment variables like so:
-
-bash
-EXPENSECATEGORIES="Rent,Food,Transport,Fun,Bills" ./expenseowl
-
-
-Similarly, it can be specified in a Docker compose stack of a Docker CLI command with the -e flag. Refer to the examples shown above in the README.
-
-Contributing
-
-Contributions are welcome; please ensure they align with the project's philosophy of simplicity. The project's core principle is maintaining user-facing simplicity by strictly using the current . It is intended for home lab use, i.e., a self-hosted first approach (containerized use). Consider the following:
-Additions should have sensible defaults without breaking foundations
-Environment variables should be used for user configuration in containers
-Custom features should prefer configuration via command-line arguments
-Found a typo? Please open an issue instead of a PR
-
-Ideas and improvements are welcome! Feel free to start a discussion by opening an issue.
-
-Technology Stack
-Backend: Go
-Storage: JSON file system
-Frontend: Chart.js and vanilla web stack (HTML, JS, CSS)
-Interface: CLI + Web UI
+WeatherVista is the result of a passion for creating user-friendly applications that empower individuals to make informed decisions. Inspired by a love for technology and the desire to simplify weather information, Mohammad Wasim Tikki set out to develop a weather app that seamlessly integrates accuracy with an engaging user experience. Join us in exploring the world of WeatherVista!

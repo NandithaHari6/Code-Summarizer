@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from "./App";
 import SummarySelector from "./SummarySelector";
-
+import LoginPage from "./LoginPage";
 import DummyLogin from "./DummyLogin"; // Ensure this file exists
 import Profile from "./Profile"; // Ensure this file exists
 import CodeSummary from "./CodeSummary";

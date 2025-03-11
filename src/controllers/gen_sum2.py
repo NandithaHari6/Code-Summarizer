@@ -346,9 +346,9 @@ def load_single_file(repo_link: str, file_path: str):
     os.remove(temp_file_path)
 
     return documents   
-def reduce_phase_file_sum_from_res(llm,res, documents,file_path):
+def reduce_phase_file_sum_from_res(llm,res,file_path):
     j=0
-    code_snippet_sum=[0]*len(documents)
+    code_snippet_sum=[0]*len(res)
   
     for i in range(len(res)):
         if file_path == res[i].metadata['source']:
@@ -384,7 +384,7 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            shutil.rmtree(repo_path)
+            shutil.rmtree(repo_path,onerror=remove_readonly)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")

@@ -1,57 +1,43 @@
-ClinicHospitalManagement
+To-Do List App
 
-IMPORTANT INSTRUCTIONS HOW TO RUN THE PROJECT :-
+This repository contains code for creating a simple To-Do List application using Python and Streamlit. The application allows users to manage their tasks by adding new tasks, marking tasks as completed, and clearing the task list. The tasks are stored in a CSV file for persistence.
 
+Usage
 
-Run the main.py file 
-In login page 
-  user name: abc 
-  password : pqr
+To use the To-Do List application, you can follow these steps:
 
-Create a database for the students in mysql commandline using following Commands:
-
-1.  CREATE DATABASE PATIENTSDB;
-
-2.   USE PATIENTSDB;
+1. Install the necessary dependencies by running the following command:
    
-3.  CREATE TABLE patients (
-  MOBILE varchar(200) NOT NULL,
-  NAME varchar(200) NOT NULL,
-  DOB varchar(200) NOT NULL,
-  HISTORY varchar(200) NOT NULL,
-  MEDICINES varchar(200) NOT NULL,
-   PRIMARY KEY (MOBILE)
-);
+   pip install streamlit
+   
 
-Screen Shot of Project: 
+2. Clone the repository:
+   
+   git clone 
+   
 
+3. Navigate to the project directory:
+   
+   cd to-do-list
+   
 
+4. Run the application using Streamlit:
+   
+   streamlit run main.py
+   
 
+5. A web app will open in your browser, displaying the To-Do List interface.
 
+6. To add a new task, type the task description in the "Add a new task" input box and click the "Add" button.
 
-Description of the project :
-The project is build using Python and tkinter and uses mysql as a database
-Welcome to the Clinic/Hospital Management System! Our system is designed to efficiently store and manage patient data, as well as handle appointment bookings and cancellations. Here are the key features:
+7. To mark a task as completed, click the checkbox next to the task.
 
-1. Patient Database:
-The system maintains a comprehensive patient database.
-Each patient's record includes the following information:
-Mobile number (primary key)
-Name
-Date of Birth
-Medical History
-Prescribed Medicines
+8. To clear all tasks, click the "Clear all tasks" button.
 
-2. Patient Management:
-You can easily add new patients to the database, providing all the necessary details.
-Select and view specific patient records when required.
-Search for patients based on their mobile number, name, or other criteria.
-Delete patient records if needed (e.g., upon request or when a patient is discharged).
+Repository Files
+main.py: This file contains the main code for the To-Do List application. It uses the Streamlit library for building the user interface and handles task management functions.
+tasks.csv: This CSV file is used to store the tasks. Each task is stored as a separate row in the file.
 
-3. Appointment Management:
-Our system also handles appointment scheduling and cancellations.
-Patients can book appointments at their preferred date and time.
-In case of schedule changes or conflicts, patients can cancel their appointments.
-You can search for upcoming or past appointments for any patient.
+Streamlit Web App
 
-Our Clinic/Hospital Management System is designed to streamline administrative tasks, improve patient record-keeping, and enhance the overall appointment management process. It ensures that essential patient information and appointment details are readily accessible and efficiently managed. If you have any questions or need assistance, feel free to ask!
+You can access the web app for the To-Do List application . The app provides an interactive interface for managing your tasks.

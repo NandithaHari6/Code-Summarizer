@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Alert, CircularProgress } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import axios from "axios"; // ✅ Import axios for API requests
 
 function CodeSummary() {
@@ -8,7 +7,6 @@ function CodeSummary() {
   const [error, setError] = useState("");
   const [summary, setSummary] = useState(""); // ✅ Store API response
   const [loading, setLoading] = useState(false); // ✅ Show loading state
-  const navigate = useNavigate(); // ✅ Hook for navigation
 
   const handleSummarize = async () => {
     setError("");
@@ -50,24 +48,6 @@ function CodeSummary() {
         position: "relative",
       }}
     >
-      {/* Home Button (Top Right) */}
-      <Button
-        variant="contained"
-        onClick={() => navigate("/")}
-        sx={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          backgroundColor: "green",
-          color: "white",
-          fontWeight: "bold",
-          borderRadius: "20px",
-          "&:hover": { backgroundColor: "darkgreen" },
-        }}
-      >
-        Home
-      </Button>
-
       <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "white" }}>
         <span style={{ color: "green" }}>Code Essence</span>
       </Typography>

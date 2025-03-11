@@ -1,131 +1,15 @@
-Online Learning Management System
-
-Overview
-
-This project is a Learning Management System (LMS) built with React.js for the frontend, Spring Boot for the backend, and MySQL as the database. It provides a comprehensive platform for managing online courses, user profiles, assessments, progress tracking, and more.
-
-Features
-User Management:
-User registration and login functionality.
-User profiles with the ability to update information.
-Course Management:
-Admin can add, edit, and manage courses.
-Course details include name, instructor, description, etc.
-Assessment:
-Users can take assessments related to courses.
-Admin can create and manage assessment questions.
-Progress Tracking:
-Monitor user progress and completion status.
-Visual representation of progress for users.
-Certificate Generation:
-Automatic certificate generation upon course completion.
-Personalized certificates with user details.
-Discussion Forum:
-Course-specific discussion forums for users.
-Interaction between users and instructors.
-Admin DashBoard:
-For course addition and assessment question addition.
-tracking of students, coursees, and enrollments. 
-
-Technologies Used
-Frontend:
-React.js
-Styled with CSS
-Backend:
-Spring Boot
-RESTful API architecture
-Database:
-MySQL
-Seven tables: course, learning, progress, discussion, feedback, question, user, assessment
-
-Setup
-
-1. Clone the repository:
-
-    bash
-    git clone https://github.com/PATMESH/Learning-Management-System.git
-    
-
-2. Navigate to the frontend and backend folders and follow their respective setup instructions.
-
-3. Run the frontend (React.js) on http://localhost:3000 and the backend (Spring Boot) on http://localhost:8080.
-
-4. Set up the MySQL database and configure the connection.
-
-Usage
-Visit the application on http://localhost:3000.
-As an admin, you can manage courses, create assessments, and monitor user progress. To access the admin dashboard, if your application is running locally, you can navigate to http://localhost:3000/dashboard.
-Users can register, log in, view courses, take assessments, and receive certificates.
-
-Contributing
-
-Feel free to contribute to the project by opening issues or submitting pull requests. Your feedback is highly appreciated!
-
-
-Site Images
-Login:
-
-
-
-
-
-Register:
-
-
-
-
-Courses:
-
-
-
-
-Profile:
-
-
-
-
-
-Learnings:
-
-
-
-
-Course learning:
-
-
-
-
-
-Assessment:
-
-
-
-
-Certificate:
-
-
-
-
-Dashboard:
-
-
-
-
-
-
-Add Course:
-
-
-
-
-Edit Course:
-
-
-
-
-Add Assessment Questions:
-
-
-
-
-Home page:
+Text-Editor
+This program implements a text editor using Linked List and Stack data structures.
+
+Each line of text is saved into a linked list node, which consists of a data portion holding the text and a pointer to the next node of the linked list, which is the next line of the text. The program makes use of Stack data structure to implement the Undo function.
+
+Features:
+Open an existing file and parse every line to a linked list.
+Save into a file
+Insert text into line n (user given line number and text)
+Delete line n (user given line number)
+Move line n to line m (interchanging two user given lines)
+Replace text in line n (user given line number and text)
+Next page
+Previous page
+Undo (Implemented using Stack data structure) (Slightly buggy)

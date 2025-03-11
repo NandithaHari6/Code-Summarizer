@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [repoURL, setRepoURL] = useState("");
   const [error, setError] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const navigate = useNavigate();
-
-  // Check if the user is logged in
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // Convert to boolean (true if token exists)
-  }, []);
 
   const handleSummarize = () => {
     setError("");
@@ -24,13 +17,6 @@ function Home() {
 
     console.log("Navigating to SummarySelector with repoURL:", repoURL);
     navigate(`/summary-selector?repoURL=${encodeURIComponent(repoURL)}`);
-  };
-
-  // Handle Logout
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove token
-    setIsLoggedIn(false); // Update state
-    navigate("/"); // Redirect to home after logout
   };
 
   return (
@@ -48,62 +34,41 @@ function Home() {
         position: "relative",
       }}
     >
-      {/* Show Profile Button only if user is logged in */}
-      {isLoggedIn && (
-        <Button
-          variant="contained"
-          onClick={() => navigate("/profile")}
-          sx={{
-            position: "absolute",
-            top: 20,
-            left: 20,
-            backgroundColor: "green",
-            color: "white",
-            fontWeight: "bold",
-            borderRadius: "20px",
-            "&:hover": { backgroundColor: "darkgreen" },
-          }}
-        >
-          Profile
-        </Button>
-      )}
+      {/* Profile Button (Top Left) */}
+      <Button
+        variant="contained"
+        onClick={() => navigate("/profile")}
+        sx={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          backgroundColor: "green",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "20px",
+          "&:hover": { backgroundColor: "darkgreen" },
+        }}
+      >
+        Profile
+      </Button>
 
-      {/* Show Login if user is NOT logged in, otherwise show Logout */}
-      {isLoggedIn ? (
-        <Button
-          variant="contained"
-          onClick={handleLogout}
-          sx={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            backgroundColor: "green",
-            color: "white",
-            fontWeight: "bold",
-            borderRadius: "20px",
-            "&:hover": { backgroundColor: "darkgreen" },
-          }}
-        >
-          Logout
-        </Button>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() => (window.location.href = "http://localhost:3000/login")}
-          sx={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            backgroundColor: "green",
-            color: "white",
-            fontWeight: "bold",
-            borderRadius: "20px",
-            "&:hover": { backgroundColor: "darkgreen" },
-          }}
-        >
-          Login
-        </Button>
-      )}
+      {/* Login Button (Top Right) */}
+      <Button
+        variant="contained"
+        onClick={() => (window.location.href = "http://localhost:3000/login")}
+        sx={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          backgroundColor: "green",
+          color: "white",
+          fontWeight: "bold",
+          borderRadius: "20px",
+          "&:hover": { backgroundColor: "darkgreen" },
+        }}
+      >
+        Login
+      </Button>
 
       <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "white" }}>
         <span style={{ color: "green" }}>Code Essence</span>

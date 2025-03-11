@@ -5,19 +5,16 @@ from bs4 import BeautifulSoup  # For extracting plain text from Markdown/HTML
 
 # List of GitHub repository links
 github_links = [
-    "https://github.com/adityasurya4103/Clinic-Hospital-Management-System-",
-"https://github.com/Viveckh/Veniqa",
-"https://github.com/Tanq16/ExpenseOwl",
-"https://github.com/AR10X/data-analysis",
-"https://github.com/PATMESH/Learning-Management-System",
 "https://github.com/deepankarvarma/To-Do-List-Using-Python",
-"https://github.com/otahina/PowerPoint-Generator-Python-Project",
+
 "https://github.com/MaxRohowsky/chrome-dinosaur",
 "https://github.com/wasimtikki120/WeatherVista-Interactive-Weather-App",
 
 "https://github.com/Rohit-Nandagawali/HTML-Chat-Application-using-java",
-]
 
+"https://github.com/bqubique/Text-Editor",
+"https://github.com/Malavikkarajmohan/Movie-Ticket-Booking-System",
+"https://github.com/rba1aji/Job-Portal-System"]
 def get_default_branch(repo_owner, repo_name):
     """Fetches the default branch of a GitHub repository."""
     api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}"

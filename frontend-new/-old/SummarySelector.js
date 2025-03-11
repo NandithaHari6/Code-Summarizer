@@ -21,10 +21,7 @@ function SummarySelector() {
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summary, setSummary] = useState("");
-  const [saving, setSaving] = useState(false); // For save button loading state
 
-  // Get stored token
-  const token = localStorage.getItem("token");
   // Extract repo details from GitHub URL
   const getRepoDetails = () => {
     if (!repoURL) return { owner: null, repo: null };
@@ -141,52 +138,11 @@ function SummarySelector() {
     setLoadingSummary(false);
     
   };
-   // Save Summary to Backend
-   const saveSummary = async () => {
-    if (!token) {
-      alert("You are not logged in. Please log in first.");
-      return;
-    }
-  
-    if (!summary) return;
-  
-    setSaving(true);
-    try {
-      const response = await fetch("https://code-summarizer.onrender.com/save_summary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Pass token in headers
-        },
-        body: JSON.stringify({
-          repo_link: repoURL,
-          level: selectedFile ? "file" : "folder",
-          summary: summary,
-        }),
-      });
-  
-      const data = await response.json();
-      if (response.ok) {
-        alert("Summary saved successfully!");
-      } else {
-        alert("Error saving summary: " + data.message);
-      }
-    } catch (error) {
-      console.error("Error saving summary:", error);
-      alert("Failed to save summary.");
-    }
-    setSaving(false);
-  };
-  
 
   // Generate GitHub URL for the selected file
   const extractGitHubFileURL = (filePath) => {
-    if (!repoURL || !filePath) return "#";
-  
-    const cleanPath = filePath.replace("/tmp/clonedfile/", ""); // Remove unwanted prefix
-    return `${repoURL}/blob/main/${cleanPath}`;
+    return repoURL ? `${repoURL}/blob/main/${filePath}` : "#";
   };
-  
 
   return (
     <Box
@@ -261,7 +217,6 @@ Code Level
         }}
       >
         {file.replace("/tmp/clonedfile/", "")} {/* Display relative path */}
-        
       </MenuItem>
     ))
   )}
@@ -290,67 +245,33 @@ Code Level
 
       {/* Main Content */}
       <Box sx={{ flexGrow: 1, textAlign: "center", padding: "20px" }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-  {selectedFile ? `File: ${selectedFile.replace("/tmp/clonedfile/", "")}` : "Project Level Summary"}
-</Typography>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+          {selectedFile ? `File: ${selectedFile}` : "Project Level Summary"}
+        </Typography>
 
+        <Box sx={{ backgroundColor: "#333", padding: "20px", borderRadius: "10px", color: "white" }}>
+          {loadingSummary ? <CircularProgress /> : <Typography>{summary}</Typography>}
+        </Box>
 
-       
-{/* Summary Box */}
-<Box
-  sx={{
-    backgroundColor: "#333",
-    padding: "20px",
-    borderRadius: "10px",
-    color: "white",
-    minHeight: "150px", // Ensures space for summary text
-  }}
->
-  {loadingSummary ? <CircularProgress /> : <Typography>{summary}</Typography>}
-</Box>
-
-{/* Buttons outside the summary box */}
-<Box
-  sx={{
-    display: "flex",
-    justifyContent: selectedFile ? "space-between" : "center", // Center for project, space-between for file
-    mt: 2, // Add margin-top for spacing
-  }}
->
-  {/* Save Summary Button (Centered for Project Level) */}
-  {summary && (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: "green",
-        color: "white",
-        "&:hover": { backgroundColor: "#4caf50" },
-      }}
-      onClick={saveSummary}
-      disabled={saving}
-    >
-      {saving ? <CircularProgress size={20} color="inherit" /> : "Save Summary"}
-    </Button>
-  )}
-
-  {/* View Content Button (Only for File Level, Right Aligned) */}
-  {selectedFile && (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: "green",
-        color: "white",
-        "&:hover": { backgroundColor: "#4caf50" },
-      }}
-      onClick={() => window.open(extractGitHubFileURL(selectedFile), "_blank")}
-    >
-      View Content
-    </Button>
-  )}
-</Box>
-
-
-
+        {/* "View Content" Button (Only for File Level) */}
+        {selectedFile && (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "green",
+              color: "white",
+              borderRadius: "10px",
+              mt: 3,
+              padding: "10px 20px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#4caf50" },
+            }}
+            onClick={() => window.open(extractGitHubFileURL(selectedFile), "_blank")}
+          >
+            View Content
+          </Button>
+        )}
       </Box>
     </Box>
   );

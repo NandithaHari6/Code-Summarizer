@@ -1,0 +1,27 @@
+This is a simple implementation of the Chrome Dinosaur Game using Python and Pygame. The game is a simple infinite runner where the player has to jump over cacti and avoid birds. The game gets progressively harder as the player's score increases. See how far you can get!
+
+Installation
+Requirements: You must have Python installed and preferably a code editor like PyCharm.
+
+Clone the repository
+In the terminal, navigate to the directory where the repository was cloned, e.g., C:\Users\Max\PycharmProjects\chrome-dinosaur
+Create a virtual environment, activate it, and install pygame by running the following commands in the terminal:
+python -m venv venv #This creates a virtual environment
+venv\Scripts\activate #This activates the virtual environment
+pip install pygame #This installs the Pygame library
+Run the game by running the following command in the terminal:
+python main.py
+Controls
+Use the up arrow key or spacebar to jump.
+Press any key to start the game.
+When the game ends, press any key to restart.
+Libraries
+pygame: Pygame is a cross-platform set of Python modules designed for writing video games.
+FAQ
+How to Open GitHub Projects in PyCharm? Explained Here
+How to use Virtual Environments? Explained Here
+How to install PyCharm and Python? Explained Here
+How to set PyCharm Config. and Interpreter? Explained Here
+Contact
+Feel free to reach out to me on Twitter if you have any questions or feedback! Hope you find this useful!
+
