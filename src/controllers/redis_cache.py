@@ -1,6 +1,6 @@
 import redis
 import json
-
+import pickle
 import os
 
 # Initialize Redis connection
@@ -20,12 +20,12 @@ def load_docs_from_redis(repo_link):
     """Retrieve cached results for the given repo_link."""
     cached_data = redis_client.get(repo_link)
     if cached_data:
-        return json.loads(cached_data)
+        return pickle.loads(cached_data)
     return None
 
 def save_docs_to_redis(repo_link, cached_res, completed=False):
     """Store results along with completion flag in Redis."""
-    redis_client.setex(repo_link,3600, json.dumps({"res": cached_res, "completed": completed}))
+    redis_client.set(repo_link, pickle.dumps({"res": cached_res, "completed": completed}))
 def delete_docs_from_redis(repo_link):
     redis_client.delete(repo_link)
 def display_redis_keys():
