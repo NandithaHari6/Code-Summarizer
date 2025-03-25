@@ -108,7 +108,8 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            shutil.rmtree(repo_path,onerror=remove_readonly)
+            # shutil.rmtree(repo_path,onerror=remove_readonly)
+            shutil.rmtree(repo_path)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")
