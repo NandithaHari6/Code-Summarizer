@@ -27,7 +27,7 @@ git_router = APIRouter()
 def github_login_endpoint():
     """Redirect user to GitHub for authentication."""
   
-    github_auth_url =f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+    github_auth_url =f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}"
     headers = {'Content': 'application/json'}
     return RedirectResponse(url=github_auth_url,headers=headers)
 

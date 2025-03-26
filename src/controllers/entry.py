@@ -34,8 +34,8 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
     elif level=="file":
         if cached_docs and cached_docs["completed"]:
             final_sum=reduce_phase_file_sum_from_res(llm,res,file_path)
-            print(final_sum.content)
-            final_sum=final_sum.content
+            print(final_sum)
+            
         else:             
             extracted_path = file_path.replace("/tmp/clonedfile/", "", 1)
             documents=load_single_file(repo_link,extracted_path)
@@ -47,5 +47,5 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
         delete_folder(repo_path)
     return final_sum
 if __name__=="__main__":
-    generate_summary("https://github.com/PATMESH/Learning-Management-System","folder")
+    generate_summary("https://github.com/PATMESH/Learning-Management-System","file","\\tmp\\clonedfile\\backend\\src\\main\\java\\com\\example\\demo\\controller\\AssessmentController.java")
     

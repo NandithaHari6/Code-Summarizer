@@ -8,10 +8,12 @@ from dotenv import load_dotenv
 from controllers.redis_cache import save_file_structure_to_redis, load_file_structure_from_redis, delete_docs_from_redis
 import shutil
 import requests
+from schema.gen_summary import SummaryResponse
 load_dotenv()
 import time
 from collections import deque
 import os
+from langchain_core.output_parsers import JsonOutputParser
 import time
 
 API_KEYS=[os.getenv("groq_api_key"),os.getenv("groq_api_key_2"),os.getenv("groq_api_key_3")]
@@ -115,8 +117,8 @@ def delete_folder(repo_path):
             print(f"Directory does not exist: {repo_path}")
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
-def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
-    """Recursively generates a directory structure dictionary, ignoring hidden files."""
+def get_directory_structure(repo_link, root_dir="/tmp/clonedfile", suffixes=[".py", ".js", ".jsx", ".cpp", ".java", ".c", ".cs", ".rs", ".rb"]):
+    """Recursively generates a directory structure dictionary, including only files with specified suffixes."""
     
     # Check Redis cache first
     cached_docs = load_file_structure_from_redis(repo_link)
@@ -133,11 +135,15 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
         for item in os.listdir(directory):
             if item.startswith("."):  # Ignore hidden files and folders
                 continue
+            
             item_path = os.path.join(directory, item)
             if os.path.isdir(item_path):
-                structure[item] = build_structure(item_path)  # Recurse correctly
+                sub_structure = build_structure(item_path)
+                if sub_structure:  # Only add non-empty folders
+                    structure[item] = sub_structure
             else:
-                structure[item] = None  # Mark files as None
+                if any(item.endswith(suffix) for suffix in suffixes):
+                    structure[item] = None  # Mark files as None
         return structure
 
     directory_structure = build_structure(root_dir)
@@ -150,21 +156,61 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
         delete_folder(root_dir)
 
     return directory_structure
+# def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
+#     """Recursively generates a directory structure dictionary, ignoring hidden files."""
+    
+#     # Check Redis cache first
+#     cached_docs = load_file_structure_from_redis(repo_link)
+    
+#     if cached_docs:
+#         return cached_docs["file_structure"]
+    
+#     # Clone repository only if not already cloned
+#     elif not os.path.exists(root_dir):
+#         Repo.clone_from(repo_link, to_path=root_dir)
+
+#     def build_structure(directory):
+#         structure = {}
+#         for item in os.listdir(directory):
+#             if item.startswith("."):  # Ignore hidden files and folders
+#                 continue
+            
+#             item_path = os.path.join(directory, item)
+#             if os.path.isdir(item_path):
+#                 structure[item] = build_structure(item_path)  # Recurse correctly
+#             else:
+#                 structure[item] = None  # Mark files as None
+#         return structure
+
+#     directory_structure = build_structure(root_dir)
+
+#     # Cache the structure in Redis
+#     save_file_structure_to_redis(repo_link, directory_structure)
+
+#     # Cleanup after processing
+#     if os.path.exists(root_dir):
+#         delete_folder(root_dir)
+
+#     return directory_structure
 
 
 def code_snippet_summary(code_snippet):
     llm=instantiate_llm()
-    reduce_template = """The following in a small code snippet {code}. Explain the working and  functionality accurately, in detail. Don't use more than 200 words.
+   
+    reduce_template = """The following in a small code snippet {code}. Explain the working and  functionality accurately, in detail. Don't use more than 200 words. Return as plain text , no need of any formatting. 
     """
     reduce_prompt = PromptTemplate.from_template(reduce_template)
     reduce_chain=reduce_prompt |llm
+    final_sum=reduce_chain.invoke({"code":code_snippet})
+    print(final_sum.content)
     while True:
         try:
             final_sum=reduce_chain.invoke({"code":code_snippet}) 
             break
-        except:
+        except Exception as e:
+            print(e)
             llm= instantiate_llm()
-            reduce_chain=reduce_prompt |llm   
+            reduce_chain=reduce_prompt|llm
     return final_sum.content
     
 def close_repo(repo_link,repo_path=r"\tmp\clonedrepo"):
