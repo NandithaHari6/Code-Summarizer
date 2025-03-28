@@ -25,7 +25,7 @@ def load_docs_from_redis(repo_link):
 
 def save_docs_to_redis(repo_link, cached_res, completed=False):
     """Store results along with completion flag in Redis."""
-    redis_client.set(repo_link, pickle.dumps({"res": cached_res, "completed": completed}))
+    redis_client.setex(repo_link,3600, pickle.dumps({"res": cached_res, "completed": completed}))
 def delete_docs_from_redis(repo_link):
     redis_client.delete(repo_link)
 def display_redis_keys():

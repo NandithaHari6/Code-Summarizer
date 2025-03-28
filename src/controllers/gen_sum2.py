@@ -83,7 +83,7 @@ def load_single_file(repo_link: str, file_path: str):
         raise ValueError(f"Failed to fetch file: {raw_url}")
 
     # Save temporarily
-    temp_file_path = f"/tmp/{os.path.basename(file_path)}"
+    temp_file_path = f"/tmp/{(file_path)}"
     with open(temp_file_path, "w", encoding="utf-8") as f:
         f.write(response.text)
 
@@ -91,13 +91,13 @@ def load_single_file(repo_link: str, file_path: str):
     loader = GenericLoader.from_filesystem(
         "/tmp",
         glob=os.path.basename(file_path),
-        parser=LanguageParser(),
+        parser=LanguageParser()
     )
     
     documents = loader.load()
-
+    print(len(documents))
     # Cleanup: remove temp file
-    os.remove(temp_file_path)
+    # os.remove(temp_file_path)
 
     return documents
 def remove_readonly(func, path, _):
@@ -110,8 +110,8 @@ def delete_folder(repo_path):
     try:
         if os.path.exists(repo_path):
             print(f"Directory exists: {repo_path}. Deleting...")
-            # shutil.rmtree(repo_path,onerror=remove_readonly)
-            shutil.rmtree(repo_path)
+            shutil.rmtree(repo_path,onerror=remove_readonly)
+            # shutil.rmtree(repo_path)
             print(f"Deleted {repo_path}")
         else:
             print(f"Directory does not exist: {repo_path}")

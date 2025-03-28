@@ -18,17 +18,19 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
             res = cached_docs["res"]
         else:
             docs = load_docs(repo_link, repo_path)
+            
             res=map_phase(llm,docs,repo_link)
     elif level=="folder": 
         docs = load_docs(repo_link, repo_path)
         res=map_phase(llm,docs,repo_link)
         
-    print("Len of documents")
-    print(len(documents))
+
+
     #Map reduce
     if level=="folder":
         # file_structure=get_directory_structure(repo_link)
         print(f"res is {res[0]}")
+        print(res[0])
         final_sum=reduce_phase_folder_sum(llm,res)
         print(final_sum)
     elif level=="file":
@@ -37,15 +39,16 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
             print(final_sum)
             
         else:             
-            extracted_path = file_path.replace("/tmp/clonedfile/", "", 1)
+            extracted_path = file_path.replace("\\tmp\\clonedfile\\", "" , 1)
+            print("Extracted path",extracted_path)
             documents=load_single_file(repo_link,extracted_path)
-            print(len(documents))
+
+            
             final_sum=reduce_phase_file_sum(llm,documents,file_path)
-            print(final_sum.content) 
-            final_sum=final_sum.content
+            print(final_sum)
     if os.path.exists(repo_path):
         delete_folder(repo_path)
     return final_sum
 if __name__=="__main__":
-    generate_summary("https://github.com/PATMESH/Learning-Management-System","file","\\tmp\\clonedfile\\backend\\src\\main\\java\\com\\example\\demo\\controller\\AssessmentController.java")
+    generate_summary("https://github.com/wasimtikki120/WeatherVista-Interactive-Weather-App","file","\\tmp\\clonedfile\\script.js")
     

@@ -7,7 +7,7 @@ import {
   MenuItem,
   CircularProgress,
 } from "@mui/material";
-
+import config from "./config";
 import { useLocation, useNavigate } from "react-router-dom"; 
 
 function SummarySelector() {
@@ -98,7 +98,7 @@ function SummarySelector() {
     setSelectedSummary("Project Level");
     setSelectedFile(null);
     try {
-      const response = await fetch("https://code-summarizer.onrender.com/generate_folder_summary", {
+      const response = await fetch(`${config.API_BASE_URL}/generate_folder_summary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -152,7 +152,8 @@ function SummarySelector() {
   
     setSaving(true);
     try {
-      const response = await fetch("https://code-summarizer.onrender.com/save_summary", {
+      
+      const response = await fetch(`${config.API_BASE_URL}/save_summary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -303,11 +304,42 @@ Code Level
     padding: "20px",
     borderRadius: "10px",
     color: "white",
-    minHeight: "150px", // Ensures space for summary text
+    minHeight: "150px",
+    textAlign: "left",
+    paddingBottom: "20px",
   }}
 >
-  {loadingSummary ? <CircularProgress /> : <Typography>{summary}</Typography>}
+  {loadingSummary ? (
+    <CircularProgress />
+  ) : summary ? (
+    typeof summary === "object" ? ( // Project-level summary (object)
+      <>
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "lightgreen" }}>
+          {summary.projectTitle}
+        </Typography>
+        <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+          Tech Stack: <span style={{ color: "lightblue" }}>{summary.techStack}</span>
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 2 }}>{summary.projectOverview}</Typography>
+        
+        <Typography variant="h6" sx={{ fontWeight: "bold", mt: 2 }}>Files Overview:</Typography>
+        <Box component="ul" sx={{ marginLeft: 2 }}>
+          {summary.fileOverview?.split(", ").map((file, index) => (
+            <li key={index} style={{ color: "#ccc" }}>{file}</li>
+          ))}
+        </Box>
+      </>
+    ) : ( // File-level summary (string)
+      <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+        {summary}
+      </Typography>
+    )
+  ) : (
+    <Typography>No summary available.</Typography>
+  )}
 </Box>
+
+
 
 {/* Buttons outside the summary box */}
 <Box
