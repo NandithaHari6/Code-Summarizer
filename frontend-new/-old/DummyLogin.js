@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import config from './config'
+
 const DummyLogin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
 
   const handleLogin = () => {
-    window.location.href = `${config.API_BASE_URL}/github-login`;
+    window.location.href = "https://code-summarizer.onrender.com/github-login";
   };
 
   useEffect(() => {

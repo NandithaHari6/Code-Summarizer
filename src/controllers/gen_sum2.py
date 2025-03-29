@@ -95,9 +95,9 @@ def load_single_file(repo_link: str, file_path: str):
     )
     
     documents = loader.load()
-    print(len(documents))
+    # print(len(documents))
     # Cleanup: remove temp file
-    # os.remove(temp_file_path)
+    os.remove(temp_file_path)
 
     return documents
 def remove_readonly(func, path, _):

@@ -97,7 +97,6 @@ function SummarySelector() {
     setLoadingSummary(true);
     setSelectedSummary("Project Level");
     setSelectedFile(null);
-    console.log(repoURL)
     try {
       const response = await fetch(`${config.API_BASE_URL}/generate_folder_summary`, {
         method: "POST",
@@ -108,7 +107,6 @@ function SummarySelector() {
         body: JSON.stringify({ repo_link: repoURL, level: "folder" }),
       });
       const data = await response.json();
-      console.log(data)
       console.log(data.summary);
       setSummary(data.summary || "No summary available.");
     } catch (error) {

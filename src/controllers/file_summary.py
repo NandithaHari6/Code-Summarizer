@@ -39,7 +39,7 @@ def reduce_phase_file_sum(llm,code_snippet_doc,file_path):
 
     map_template = """
     {docs}
-    Explain the code . 
+    Explain the code in  not more than 200 words. 
     -Do not include meta data information and code snippet . 
     -Just the sentence explaination is enough"""
     map_prompt = PromptTemplate.from_template(map_template)

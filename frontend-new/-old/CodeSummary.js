@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Alert, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Import axios for API requests
+import axios from "axios"; //
 import config from "./config";
 function CodeSummary() {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const [summary, setSummary] = useState(""); // ✅ Store API response
-  const [loading, setLoading] = useState(false); // ✅ Show loading state
-  const navigate = useNavigate(); // ✅ Hook for navigation
+  const [summary, setSummary] = useState(""); //  Store API response
+  const [loading, setLoading] = useState(false); // Show loading state
+  const navigate = useNavigate(); //  Hook for navigation
 
   const handleSummarize = async () => {
     setError("");
@@ -22,7 +22,7 @@ function CodeSummary() {
     }
 
     try {
-      const response = await axios.post(`${config.API_BASE_URL}/generate_code_summmary`, {
+      const response = await axios.post(`${config.API_BASE_URL}/generate_code_summary`, {
         code: code,
       });
 

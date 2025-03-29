@@ -27,7 +27,7 @@ function Profile() {
         });
 
         setUserInfo(userResponse.data);
-        
+
         const summariesResponse = await axios.get(`${config.API_BASE_URL}/view_saved_sum`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -158,19 +158,9 @@ function Profile() {
                     {item.repo_link}
                   </a>
                 </Typography>
-
-                {/* JSON Summary Parsing */}
-                <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)", whiteSpace: "pre-wrap" }}>
-                  {(() => {
-                    try {
-                      const parsedSummary = JSON.parse(item.summary);
-                      return <pre>{JSON.stringify(parsedSummary, null, 2)}</pre>;
-                    } catch (error) {
-                      return item.summary || "No summary available";
-                    }
-                  })()}
+                <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
+                  {item.summary || "No summary available"}
                 </Typography>
-
                 <Button
                   variant="contained"
                   color="error"
