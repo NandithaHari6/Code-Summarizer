@@ -84,6 +84,7 @@ def display_summary(githubid: int = Depends(get_github_user),  # Now uses OAuth2
         }
         for summary in summaries
     ]
+
 @git_router.get("/user_info")
 def get_user_info_endpoint(res:dict= Depends(get_user_info) ):
 

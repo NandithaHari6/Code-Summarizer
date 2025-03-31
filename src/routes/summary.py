@@ -1,9 +1,9 @@
-from fastapi import APIRouter
-from fastapi import FastAPI, HTTPException
-from controllers.gen_sum2 import close_repo,get_directory_structure,code_snippet_summary
+from fastapi import APIRouter, Response
+from fastapi import HTTPException
+from controllers.gen_sum2 import close_repo,get_directory_structure,code_snippet_summary, create_pdf
 from controllers.entry import generate_summary
 # from controllers.prompts import code_snippet_summary
-from schema.gen_summary import SummaryRequest,CloseRepoRequest, CodeSnippet
+from schema.gen_summary import SummaryRequest,CloseRepoRequest, CodeSnippet, SummaryDownloadRequest
 
 router = APIRouter()
 @router.post("/generate_folder_summary")
@@ -52,6 +52,25 @@ async def close_repo_request(request: CloseRepoRequest):
     except Exception as e:
         # Handle exceptions and return an error response
         raise HTTPException(status_code=500, detail=str(e))
+@router.post("/download_summary_pdf/")
+async def download_summary(request: SummaryDownloadRequest):
+    """
+    API to generate and download a summary PDF.
+    - `summary`: JSON dictionary with project details.
+    - `repo_link`: GitHub repository link.
+    - `level`: Level of summarization.
+    """
+    try:
+        pdf_bytes = create_pdf(request.summary, str(request.repo_link), request.level)
+
+        headers = {
+            "Content-Disposition": "attachment; filename=project_summary.pdf",
+            "Content-Type": "application/pdf",
+        }
+        return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
+    
+    except Exception as e:
+        return {"error": str(e)}
 @router.get("/")
 async def hello():
     print()

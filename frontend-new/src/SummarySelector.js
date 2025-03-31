@@ -108,8 +108,7 @@ function SummarySelector() {
         body: JSON.stringify({ repo_link: repoURL, level: "folder" }),
       });
       const data = await response.json();
-      console.log(data)
-      console.log(data.summary);
+  
       setSummary(data.summary || "No summary available.");
     } catch (error) {
       console.error("Error fetching project summary:", error);

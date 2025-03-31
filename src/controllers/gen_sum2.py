@@ -8,13 +8,16 @@ from dotenv import load_dotenv
 from controllers.redis_cache import save_file_structure_to_redis, load_file_structure_from_redis, delete_docs_from_redis
 import shutil
 import requests
-from schema.gen_summary import SummaryResponse
+
 load_dotenv()
 import time
 from collections import deque
 import os
-from langchain_core.output_parsers import JsonOutputParser
+
 import time
+from fpdf import FPDF
+
+import io
 
 API_KEYS=[os.getenv("groq_api_key"),os.getenv("groq_api_key_2"),os.getenv("groq_api_key_3")]
 queue = deque([(i, time.time()) for i in range(len(API_KEYS))])
@@ -156,6 +159,55 @@ def get_directory_structure(repo_link, root_dir="/tmp/clonedfile", suffixes=[".p
         delete_folder(root_dir)
 
     return directory_structure
+def create_pdf(summary_data: dict, repo_link: str, level: str) -> bytes:
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # Title
+    pdf.set_font("Arial", style="B", size=16)
+    pdf.cell(200, 10, "Project Summary", ln=True, align="C")
+    pdf.ln(10)
+
+    # Repo Link as Hyperlink
+    pdf.set_font("Arial", size=12)
+    pdf.cell(10, 10, f"Repository Link:   ", ln=True)
+    pdf.set_text_color(0, 0, 255)  # Blue color for hyperlink
+    pdf.cell(0, 10, repo_link, ln=True, link=repo_link)
+    pdf.set_text_color(0, 0, 0)  # Reset color
+    pdf.ln(5)
+
+    # Summary Level
+    pdf.cell(0, 10, f"Summary Level: {level}", ln=True)
+    pdf.ln(5)
+
+    # Add content from JSON
+    for key, value in summary_data.items():
+        pdf.set_font("Arial", style="B", size=12)
+        if key == "projectTitle":
+            pdf.cell(0, 10, "Project Title", ln=True)
+        elif key == "techStack":
+            pdf.cell(0, 10, "Tech Stack Used", ln=True)
+        elif key == "fileOverview":
+            pdf.cell(0, 10, "Important Modules", ln=True)
+        elif key == "projectOverview":
+            pdf.cell(0, 10, "Summary", ln=True)
+        
+        pdf.set_font("Arial", size=11)
+
+        if isinstance(value, str) and "\n" in value:
+            for line in value.split("\n"):
+                pdf.multi_cell(0, 8, line)
+        else:
+            pdf.multi_cell(0, 8, str(value))
+        
+        pdf.ln(5)
+
+    print("Created PDF")
+    
+    # ✅ Get PDF as bytes directly
+    return pdf.output(dest="S").encode("latin1")
 # def get_directory_structure(repo_link, root_dir="/tmp/clonedfile"):
 #     """Recursively generates a directory structure dictionary, ignoring hidden files."""
     
