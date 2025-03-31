@@ -116,7 +116,60 @@ function SummarySelector() {
     }
     setLoadingSummary(false);
   };
+  const handleDownload = async () => {
+    try {
+      if (!summary) return;
+      const response = await fetch(`${config.API_BASE_URL}/download_summary_pdf/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          summary:summary,
+          repo_link: repoURL,
+          level: "folder",
+        }),
+      });
 
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      // Convert response to a Blob
+      const blob = await response.blob();
+
+      // ✅ Check if the File System API is available
+      if (window.showSaveFilePicker) {
+        // Open the "Save As" dialog
+        const handle = await window.showSaveFilePicker({
+          suggestedName: "summary.pdf",
+          types: [
+            {
+              description: "PDF File",
+              accept: { "application/pdf": [".pdf"] },
+            },
+          ],
+        });
+
+        // Write the file to the selected location
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } else {
+        // Fallback for browsers without File System API
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "summary.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
   // Fetch file-level summary
   const fetchFileSummary = async (filePath) => {
     if (!repoURL || !filePath) return;
@@ -366,6 +419,20 @@ Code Level
       disabled={saving}
     >
       {saving ? <CircularProgress size={20} color="inherit" /> : "Save Summary"}
+    </Button>
+  )}
+   {summary && (
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: "green",
+        color: "white",
+        "&:hover": { backgroundColor: "#4caf50" },
+      }}
+      onClick={handleDownload}
+      disabled={saving}
+    >
+      {saving ? <CircularProgress size={20} color="inherit" /> : "Download Summary"}
     </Button>
   )}
 
