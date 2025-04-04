@@ -42,7 +42,7 @@ function Profile() {
 
     fetchData();
   }, []);
-
+  
   const handleDelete = async (sumid) => {
     const token = localStorage.getItem("token");
     if (!token) {

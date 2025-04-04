@@ -52,4 +52,4 @@ def display_value(key):
 # delete_docs = delete_docs_from_redis("https://github.com/adityasurya4103/Clinic-Hospital-Management-System-")
 # delete_docs = delete_docs_from_redis("nandu")
 # delete_docs = delete_docs_from_redis("number")
-# display_redis_keys()
+display_redis_keys()

@@ -2,7 +2,7 @@ from controllers.redis_cache import  load_docs_from_redis
 import os
 from controllers.folder_summary import map_phase, reduce_phase_folder_sum
 from controllers.file_summary import reduce_phase_file_sum, reduce_phase_file_sum_from_res
-from controllers.gen_sum2 import instantiate_llm, load_single_file, load_docs,delete_folder
+from controllers.gen_sum2 import instantiate_llm, load_single_file, load_docs,delete_folder, get_directory_structure
 def generate_summary(repo_link: str,level,file_path=None) -> str:
     #Load documents
     repo_path = "/tmp/clonedfile"
@@ -23,15 +23,15 @@ def generate_summary(repo_link: str,level,file_path=None) -> str:
     elif level=="folder": 
         docs = load_docs(repo_link, repo_path)
         res=map_phase(llm,docs,repo_link)
-        
+    
 
 
     #Map reduce
     if level=="folder":
         # file_structure=get_directory_structure(repo_link)
-        print(f"res is {res[0]}")
-        print(res[0])
-        final_sum=reduce_phase_folder_sum(llm,res)
+
+        folder_structure=get_directory_structure(repo_link)
+        final_sum=reduce_phase_folder_sum(llm,res,folder_structure)
         print(final_sum)
     elif level=="file":
         if cached_docs and cached_docs["completed"]:

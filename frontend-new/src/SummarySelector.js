@@ -406,7 +406,9 @@ Code Level
     mt: 2, // Add margin-top for spacing
   }}
 >
-  {/* Save Summary Button (Centered for Project Level) */}
+  {/* Button Container */}
+<Box sx={{ display: "flex", justifyContent: "center", gap: 110, mt: 0 }}>
+  {/* Save Summary Button */}
   {summary && (
     <Button
       variant="contained"
@@ -414,6 +416,7 @@ Code Level
         backgroundColor: "green",
         color: "white",
         "&:hover": { backgroundColor: "#4caf50" },
+        marginRight: "10px", // Adds space to the right of the button
       }}
       onClick={saveSummary}
       disabled={saving}
@@ -421,20 +424,25 @@ Code Level
       {saving ? <CircularProgress size={20} color="inherit" /> : "Save Summary"}
     </Button>
   )}
-   {summary && (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: "green",
-        color: "white",
-        "&:hover": { backgroundColor: "#4caf50" },
-      }}
-      onClick={handleDownload}
-      disabled={saving}
-    >
-      {saving ? <CircularProgress size={20} color="inherit" /> : "Download Summary"}
-    </Button>
-  )}
+
+  {/* Download Summary Button */}
+  {summary && !selectedFile && (  // This condition ensures it's only rendered at project level
+      <Button
+        variant="contained"
+        sx={{
+          backgroundColor: "green",
+          color: "white",
+          "&:hover": { backgroundColor: "#4caf50" },
+          marginLeft: "10px", // Adds space to the left of the button
+        }}
+        onClick={handleDownload}
+        disabled={saving}
+      >
+        {saving ? <CircularProgress size={20} color="inherit" /> : "Download Summary"}
+      </Button>
+    )}
+</Box>
+
 
   {/* View Content Button (Only for File Level, Right Aligned) */}
   {selectedFile && (

@@ -22,7 +22,7 @@ function CodeSummary() {
     }
 
     try {
-      const response = await axios.post(`${config.API_BASE_URL}/generate_code_summmary`, {
+      const response = await axios.post(`${config.API_BASE_URL}/generate_code_summary`, {
         code: code,
       });
 

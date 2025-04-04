@@ -51,7 +51,7 @@ def map_phase(llm, documents, repo_link):
     # Mark as completed
     save_docs_to_redis(repo_link, cached_res, completed=True)
     return cached_res
-def reduce_large_folder(res):
+def reduce_large_folder(res, folder_structure):
     map_reduce_template=''' Fit in this summary generated into consice , accurate paragraph or sentence withiin 100 words, strictly.{res} '''
  
    
@@ -62,7 +62,7 @@ def reduce_large_folder(res):
 
 Analyze these snippets, extract the core themes, and distill them into a final summary within strictly 100 words'''
     reduce_template_last_doc="""The following is a collection of summaries from various small code snippets that together form a single project:  
-{docs}  .
+{docs}  .This is the folder structure of the repo {folder_structure}
 
 Analyze these snippets, extract the core themes, and distill them into a final, well-structured summary.  
 The final summary should follow this format:  
@@ -105,7 +105,7 @@ The values of each field must be strictly strings and not list or dictionary.fil
                         if i==(len(new_res)-1):
                             text = " ".join(new_res[prev:])  
                             last_reduce_chain=last_reduce_prompt |llm
-                            sum=last_reduce_chain.invoke({"docs":text}).content
+                            sum=last_reduce_chain.invoke({"docs":text,"folder_structure":folder_structure}).content
                             new_res[prev:]=[sum]
                         else:
                             text = " ".join(new_res[prev:i])  
@@ -128,17 +128,17 @@ The values of each field must be strictly strings and not list or dictionary.fil
                 i+=1
     return new_res[0]  
 
-def reduce_phase_folder_sum(llm,res):
+def reduce_phase_folder_sum(llm,res,folder_structure):
     print(res[0])
     reduce_template  = """The following is a collection of summaries from various small code snippets that together form a single project:  
-{docs}  .
+{docs}  .The folder steucture of the repo is {folder_structure}.
 
 Analyze these snippets, extract the core themes, and distill them into a final, well-structured summary.  
 The final summary should follow this format:  
 - Project Title: A concise and descriptive title reflecting the project's purpose.  
 - Tech Stack Used: List the programming languages, frameworks, libraries, and tools utilized.  
 - Project Overview: An explanation of the project's goal, functionality, and intended audience. Overview Should contain upto 300 words. 
-- File & Folder Breakdown: A structured summary of the project's key directories and files, along with their roles.
+- File & Folder Breakdown: A structured summary of the project's key directories and files, along with their roles. Strictly include the names of files in folder structure only.
 
 No need of any other sentences in the response.Return the results in JSON format with the following keys only: projectTitle, techStack, projectOverview, fileOverview.
 The values of each field must be strictly strings and not list or dictionary.fileOverview must contain filename-description format. 
@@ -153,7 +153,7 @@ The values of each field must be strictly strings and not list or dictionary.fil
         try:
             
             doc_texts = [doc.page_content for doc in res]  # Fix indexing issue
-            final_sum = reduce_chain.invoke({"docs": doc_texts})
+            final_sum = reduce_chain.invoke({"docs": doc_texts,"folder_structure":folder_structure})
             
             final_sum=json.loads(final_sum.content)
           
@@ -161,7 +161,7 @@ The values of each field must be strictly strings and not list or dictionary.fil
         except Exception as e:
             print(e)
             if "413" in str(e):
-                final_res=reduce_large_folder(res)
+                final_res=reduce_large_folder(res,folder_structure)
                 return final_res   
             else:
                 llm=instantiate_llm()
