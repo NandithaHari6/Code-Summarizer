@@ -44,12 +44,12 @@ def display_value(key):
         print("No value associated with the key")
 
 # Call the function to display keys
-
+# display_value(b'summary:https://github.com/deepankarvarma/To-Do-List-Using-Python')
 # save_docs_to_redis("nandu",[1,2,3])
 # store_res_to_redis("nandu",[4,5,6])
 # print(load_docs_from_redis("https://github.com/NandithaHari6/dbms-project-backend"))
 # delete_docs = delete_docs_from_redis("https://github.com/deepankarvarma/To-Do-List-Using-Python")
 # delete_docs = delete_docs_from_redis("https://github.com/adityasurya4103/Clinic-Hospital-Management-System-")
 # delete_docs = delete_docs_from_redis("nandu")
-# delete_docs = delete_docs_from_redis("number")
-display_redis_keys()
+# delete_docs = delete_docs_from_redis(b'https://github.com/deepankarvarma/To-Do-List-Using-Pythonfile_structure'  )
+# display_redis_keys()

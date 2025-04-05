@@ -20,14 +20,14 @@ load_dotenv()
 
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-# REDIRECT_URI = "https://code-summarizer.onrender.com/github-code"
+REDIRECT_URI = "http://127.0.0.1:8000/github-code"
 
 git_router = APIRouter()
 @git_router.get("/github-login")
 def github_login_endpoint():
     """Redirect user to GitHub for authentication."""
   
-    github_auth_url =f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}"
+    github_auth_url =f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&redirect_uri={REDIRECT_URI}"
     headers = {'Content': 'application/json'}
     return RedirectResponse(url=github_auth_url,headers=headers)
 
